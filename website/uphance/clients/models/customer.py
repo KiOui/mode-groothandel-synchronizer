@@ -1,6 +1,7 @@
-from typing import List
+from typing import List, Optional
 
-from mode_groothandel.clients.utils import get_value_or_error, apply_from_data_to_list_or_error
+from mode_groothandel.clients.utils import get_value_or_error, apply_from_data_to_list_or_error, \
+    apply_from_data_to_list_or_none
 from uphance.clients.models.customer_address import CustomerAddress
 from uphance.clients.models.person import Person
 
@@ -17,7 +18,7 @@ class Customer:
         channel_id: int,
         notes: str,
         people: List[Person],
-        addresses: List[CustomerAddress],
+        addresses: Optional[List[CustomerAddress]],
     ):
         self.id = customer_id
         self.name = name
@@ -40,7 +41,7 @@ class Customer:
             channel_id=int(get_value_or_error(data, "channel_id")),
             notes=str(get_value_or_error(data, "notes")),
             people=apply_from_data_to_list_or_error(Person.from_data, data, "people"),
-            addresses=apply_from_data_to_list_or_error(CustomerAddress.from_data, data, "addresses"),
+            addresses=apply_from_data_to_list_or_none(CustomerAddress.from_data, data, "addresses"),
         )
 
     def __str__(self):

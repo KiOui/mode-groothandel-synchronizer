@@ -1,4 +1,6 @@
+from datetime import datetime
 from typing import Optional, List
+from dateutil import parser
 
 from mode_groothandel.clients.utils import (
     get_value_or_error,
@@ -18,8 +20,8 @@ class Invoice:
     def __init__(
         self,
         invoice_id: int,
-        created_at: str,
-        updated_at: str,
+        created_at: datetime,
+        updated_at: datetime,
         items_total: float,
         items_tax: float,
         subtotal: float,
@@ -30,7 +32,7 @@ class Invoice:
         shipping_tax: float,
         settlement_discount_percentage: float,
         invoice_number: int,
-        due_date: str,
+        due_date: datetime,
         invoice_type: str,
         total_paid: float,
         total_credited: float,
@@ -95,8 +97,8 @@ class Invoice:
         """Initialize an Invoice object from a dictionary."""
         return Invoice(
             invoice_id=int(get_value_or_error(data, "id")),
-            created_at=str(get_value_or_error(data, "created_at")),
-            updated_at=str(get_value_or_error(data, "updated_at")),
+            created_at=parser.parse(str(get_value_or_error(data, "created_at"))),
+            updated_at=parser.parse(str(get_value_or_error(data, "updated_at"))),
             items_total=float(get_value_or_error(data, "items_total")),
             items_tax=float(get_value_or_error(data, "items_tax")),
             subtotal=float(get_value_or_error(data, "subtotal")),
@@ -107,7 +109,7 @@ class Invoice:
             shipping_tax=float(get_value_or_error(data, "shipping_tax")),
             settlement_discount_percentage=float(get_value_or_error(data, "settlement_discount_percentage")),
             invoice_number=int(get_value_or_error(data, "invoice_number")),
-            due_date=str(get_value_or_error(data, "due_date")),
+            due_date=datetime.strptime(str(get_value_or_error(data, "due_date")), "%Y-%m-%d"),
             invoice_type=get_value_or_error(data, "invoice_type"),
             total_paid=float(get_value_or_error(data, "total_paid")),
             total_credited=float(get_value_or_error(data, "total_credited")),

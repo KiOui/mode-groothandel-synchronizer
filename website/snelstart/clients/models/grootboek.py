@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List, Optional
 
 from mode_groothandel.clients.utils import get_value_or_error, apply_from_data_to_list_or_none, get_value_or_none
@@ -8,7 +9,7 @@ class Grootboek:
 
     def __init__(
         self,
-        modified_on: str,
+        modified_on: datetime,
         omschrijving: str,
         kostenplaats_verplicht: bool,
         rekening_code: str,
@@ -39,7 +40,7 @@ class Grootboek:
     @staticmethod
     def from_data(data: dict) -> "Grootboek":
         return Grootboek(
-            modified_on=str(get_value_or_error(data, "modifiedOn")),
+            modified_on=datetime.strptime(str(get_value_or_error(data, "modifiedOn")), "%Y-%m-%dT%H:%M:%S.%f"),
             omschrijving=str(get_value_or_error(data, "omschrijving")),
             kostenplaats_verplicht=bool(get_value_or_error(data, "kostenplaatsVerplicht")),
             rekening_code=str(get_value_or_error(data, "rekeningCode")),

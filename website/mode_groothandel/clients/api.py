@@ -144,6 +144,7 @@ class ApiClient(abc.ABC):
             results = response.json()
         except requests.exceptions.HTTPError as http_error:
             response = http_error.response
+            print(response.text)
             try:
                 json_response = response.json()
                 error = json_response.get("error", {})
@@ -192,6 +193,7 @@ class ApiClient(abc.ABC):
         for query_key, query_value in query:
             if query_value is not None:
                 safe_filtered_query.append((quote_plus(query_key), quote_plus(query_value)))
+                # safe_filtered_query.append((quote_plus(query_key), quote_plus(query_value)))
         return ApiClient._create_querystring(safe_filtered_query)
 
     @staticmethod

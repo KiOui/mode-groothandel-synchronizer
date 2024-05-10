@@ -9,6 +9,7 @@ from snelstart.clients.authentication import SnelstartAuthClient
 from snelstart.clients.models.btw_tarief import BtwTarief
 from snelstart.clients.models.grootboek import Grootboek
 from snelstart.clients.models.land import Land
+from snelstart.clients.models.relatie import Relatie
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +53,7 @@ class Snelstart(ApiClient):
             }
 
     def add_verkoopboeking(self, data: Any) -> Any:
-        return self._post("/verkoopboekingen", payload=data)
+        return self._post("verkoopboekingen", payload=data)
 
     def update_verkoopboeking(self, _id: str, data: Any) -> Any:
         return self._put(f"verkoopboekingen/{_id}", payload=data)
@@ -70,20 +71,22 @@ class Snelstart(ApiClient):
         top: Optional[int] = None,
         _filter: Optional[str] = None,
         expand: Optional[str] = None,
-    ):
+    ) -> List[Relatie]:
         queries = [
-            ("skip", str(skip) if skip is not None else None),
-            ("top", str(top) if top is not None else None),
-            ("filter", _filter),
-            ("expand", expand),
+            ("$skip", str(skip) if skip is not None else None),
+            ("$top", str(top) if top is not None else None),
+            ("$filter", _filter),
+            ("$expand", expand),
         ]
-        url = "relaties/" + self._create_querystring_safe(queries)
-        return self._get(url)
+        url = "relaties" + self._create_querystring_safe(queries)
+        response = self._get(url)
+        return [Relatie.from_data(x) for x in response]
 
-    def add_relatie(self, relatie: Any) -> Any:
-        return self._post("relaties", payload=relatie)
+    def add_relatie(self, relatie: Any) -> Relatie:
+        response = self._post("relaties", payload=relatie)
+        return Relatie.from_data(response)
 
-    def get_btwtarieven(self) -> Any:
+    def get_btwtarieven(self) -> [BtwTarief]:
         response = self._get("btwtarieven")
         return [BtwTarief.from_data(x) for x in response]
 

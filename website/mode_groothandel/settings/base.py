@@ -122,82 +122,43 @@ OAUTH2_PROVIDER_APPLICATION_MODEL = "oauth2_provider.Application"
 CONSTANCE_BACKEND = "constance.backends.database.DatabaseBackend"
 
 CONSTANCE_CONFIG = {
-    "FOOTER_CREDITS_TEXT": (
-        "TOSTI - Tartarus Order System for Take-away Items",
-        "Text to display in the footer credits",
+    "SNELSTART_GROOTBOEKCODE_BTW_HOOG": (
+        "",
+        "Grootboekcode to book BTW hoog items under in Snelstart",
         str,
     ),
-    "CLEANING_SCHEME_URL": ("", "URL to the cleaning scheme to be accepted when submitting a borrel form", str),
-    "SILVASOFT_API_URL": ("https://rest-api.silvasoft.nl/rest/", "Endpoint for Silvasoft API", str),
-    "SILVASOFT_USERNAME": ("", "Username for Silvasoft integration", str),
-    "SILVASOFT_API_KEY": ("", "API key for Silvasoft integration", str),
-    "MAXIMUM_SYNC_PER_RUN": (15, "Maximum amount of synchronizations to run per hour", int),
-    "BORREL_SEND_BORREL_RESERVATION_REQUEST_EMAILS_TO": (
-        "noreply@example.com",
-        "Where to send borrel reservation request notifications to (e-mail address)",
+    "SNELSTART_GROOTBOEKCODE_BTW_GEEN": ("", "Grootboekcode to book BTW geen items under in Snelstart", str),
+    "SNELSTART_GROOTBOEKCODE_SHIPPING_COSTS_BTW_HOOG": (
+        "",
+        "Grootboekcode to book BTW hoog shipping costs under in Snelstart",
         str,
     ),
-    "VENUES_SEND_RESERVATION_REQUEST_EMAILS_TO": (
-        "noreply@example.com, noreply@example.com",
-        "Where to send venue reservation request notifications to (e-mail address), enter multiple addresses by using a comma (,)",
+    "SNELSTART_GROOTBOEKCODE_SHIPPING_COSTS_BTW_GEEN": (
+        "",
+        "Grootboekcode to book BTW geen shipping costs under in Snelstart",
         str,
     ),
-    "SHIFTS_DEFAULT_MAX_ORDERS_TOTAL": (70, "Default maximum number of orders per shift", int),
-    "THALIEDJE_STOP_PLAYERS_AT": ("21:00", "Time to stop the players. Should be aligned on 5 minutes", str),
-    "THALIEDJE_START_PLAYERS_AT": (
-        "08:00",
-        "Time to start the players (only on weekdays). Should be aligned on 5 minutes",
+    "SNELSTART_BTW_HOOG_NAME": {
+        "Hoog",
+        "Constant for amount of BTW Hoog post.",
         str,
-    ),
-    "THALIEDJE_HOLIDAY_ACTIVE": (
-        False,
-        "If enabled, the player will not start playing automatically at the start of the day",
-        bool,
-    ),
-    "THALIEDJE_START_PLAYER_URI": ("", "URI to start playing when the player starts automatically.", str),
-    "THALIEDJE_MAX_SONG_REQUESTS_PER_HOUR": (
-        10,
-        "Maximum number of song requests per hour before a user is blacklisted",
-        int,
-    ),
-    "STATISTICS_BORREL_CATEGORY": (
-        0,
-        "The object ID of the Category of Borrel products to show on the statistics screen.",
-        int,
-    ),
-    "FRIDGE_REQUIRE_DAILY_OPENING": (
-        False,
-        "If enabled, every day the fridge needs to be openend at least once by a person with open_always permissions, "
-        "to be able to open it again.",
-        bool,
-    ),
+    },
+    "SNELSTART_BTW_GEEN_NAME": {
+        "Geen",
+        "Constant for amount of BTW Geen post.",
+        str,
+    }
 }
 
 CONSTANCE_CONFIG_FIELDSETS = {
-    "General settings": (
-        "FOOTER_CREDITS_TEXT",
-        "CLEANING_SCHEME_URL",
-        "STATISTICS_BORREL_CATEGORY",
+    "Snelstart settings": (
+        "SNELSTART_GROOTBOEKCODE_BTW_HOOG",
+        "SNELSTART_GROOTBOEKCODE_BTW_GEEN",
+        "SNELSTART_GROOTBOEKCODE_SHIPPING_COSTS_BTW_HOOG",
+        "SNELSTART_GROOTBOEKCODE_SHIPPING_COSTS_BTW_GEEN",
+        "SNELSTART_BTW_HOOG_NAME",
+        "SNELSTART_BTW_GEEN_NAME"
     ),
-    "Silvasoft settings": (
-        "SILVASOFT_API_URL",
-        "SILVASOFT_USERNAME",
-        "SILVASOFT_API_KEY",
-        "MAXIMUM_SYNC_PER_RUN",
-    ),
-    "E-mail settings": (
-        "BORREL_SEND_BORREL_RESERVATION_REQUEST_EMAILS_TO",
-        "VENUES_SEND_RESERVATION_REQUEST_EMAILS_TO",
-    ),
-    "Shifts settings": ("SHIFTS_DEFAULT_MAX_ORDERS_TOTAL",),
-    "Thaliedje settings": (
-        "THALIEDJE_STOP_PLAYERS_AT",
-        "THALIEDJE_START_PLAYERS_AT",
-        "THALIEDJE_HOLIDAY_ACTIVE",
-        "THALIEDJE_START_PLAYER_URI",
-        "THALIEDJE_MAX_SONG_REQUESTS_PER_HOUR",
-    ),
-    "Fridge settings": ("FRIDGE_REQUIRE_DAILY_OPENING",),
 }
 
 # Sites app
