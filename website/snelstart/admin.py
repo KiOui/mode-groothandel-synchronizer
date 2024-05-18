@@ -11,7 +11,7 @@ from snelstart.services import refresh_cached_tax_types, refresh_cached_grootboe
 @admin.register(TaxMapping)
 class TaxMappingAdmin(admin.ModelAdmin):
 
-    list_display = ('name', 'tax_amount', "grootboekcode", "grootboekcode_shipping")
+    list_display = ("name", "tax_amount", "grootboekcode", "grootboekcode_shipping")
 
     form = TaxMappingAdminForm
     exclude = ("tax_amount",)
@@ -33,9 +33,7 @@ class TaxMappingAdmin(admin.ModelAdmin):
             except ApiException as e:
                 self.message_user(
                     request,
-                    format_html(
-                        f"Failed to refresh tax types from Snelstart: {e}"
-                    ),
+                    format_html(f"Failed to refresh tax types from Snelstart: {e}"),
                     level=messages.ERROR,
                 )
             redirect_url = request.path
@@ -47,9 +45,7 @@ class TaxMappingAdmin(admin.ModelAdmin):
             except ApiException as e:
                 self.message_user(
                     request,
-                    format_html(
-                        f"Failed to refresh grootboekcodes from Snelstart: {e}"
-                    ),
+                    format_html(f"Failed to refresh grootboekcodes from Snelstart: {e}"),
                     level=messages.ERROR,
                 )
             redirect_url = request.path

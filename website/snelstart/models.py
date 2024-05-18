@@ -17,7 +17,7 @@ class CachedBtwTarief(models.Model):
     datum_tot_en_met = models.DateTimeField()
 
     class Meta:
-        unique_together = (('btw_soort', 'datum_vanaf'),)
+        unique_together = (("btw_soort", "datum_vanaf"),)
 
 
 class CachedGrootboek(models.Model):

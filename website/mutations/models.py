@@ -5,6 +5,8 @@ from django.db.models import ForeignKey, PositiveIntegerField
 
 
 class Mutation(models.Model):
+    """Mutation model."""
+
     METHOD_CREATE = 0
     METHOD_UPDATE = 1
     METHOD_DELETE = 2
@@ -22,3 +24,19 @@ class Mutation(models.Model):
     object_id = PositiveIntegerField()
     on = GenericForeignKey("content_type", "object_id")
     success = models.BooleanField()
+    message = models.TextField(null=True, blank=True)
+
+    @staticmethod
+    def get_method_str(method_int: int) -> str:
+        """Convert int method to str."""
+        if method_int == Mutation.METHOD_CREATE:
+            return "Create"
+        elif method_int == Mutation.METHOD_UPDATE:
+            return "Update"
+        else:
+            return "Delete"
+
+    def __str__(self):
+        """Convert this object to string."""
+        method_str = self.get_method_str(self.method)
+        return f"{method_str} mutation on {self.on} at {self.created}"

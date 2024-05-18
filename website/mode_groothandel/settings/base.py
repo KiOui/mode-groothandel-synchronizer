@@ -10,8 +10,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "constance",
-    "constance.backends.database",
     "users",
     "mutations",
     "invoices",
@@ -96,11 +94,9 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication",
-        "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
     ),
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.URLPathVersioning",
-    "DEFAULT_SCHEMA_CLASS": "tosti.api.openapi.CustomAutoSchema",
 }
 
 # CORS
@@ -119,49 +115,21 @@ OAUTH2_PROVIDER = {
 }
 OAUTH2_PROVIDER_APPLICATION_MODEL = "oauth2_provider.Application"
 
-CONSTANCE_BACKEND = "constance.backends.database.DatabaseBackend"
-
-CONSTANCE_CONFIG = {
-    "SNELSTART_GROOTBOEKCODE_BTW_HOOG": (
-        "",
-        "Grootboekcode to book BTW hoog items under in Snelstart",
-        str,
-    ),
-    "SNELSTART_GROOTBOEKCODE_BTW_GEEN": ("", "Grootboekcode to book BTW geen items under in Snelstart", str),
-    "SNELSTART_GROOTBOEKCODE_SHIPPING_COSTS_BTW_HOOG": (
-        "",
-        "Grootboekcode to book BTW hoog shipping costs under in Snelstart",
-        str,
-    ),
-    "SNELSTART_GROOTBOEKCODE_SHIPPING_COSTS_BTW_GEEN": (
-        "",
-        "Grootboekcode to book BTW geen shipping costs under in Snelstart",
-        str,
-    ),
-    "SNELSTART_BTW_HOOG_NAME": {
-        "Hoog",
-        "Constant for amount of BTW Hoog post.",
-        str,
-    },
-    "SNELSTART_BTW_GEEN_NAME": {
-        "Geen",
-        "Constant for amount of BTW Geen post.",
-        str,
-    }
-}
-
-CONSTANCE_CONFIG_FIELDSETS = {
-    "Snelstart settings": (
-        "SNELSTART_GROOTBOEKCODE_BTW_HOOG",
-        "SNELSTART_GROOTBOEKCODE_BTW_GEEN",
-        "SNELSTART_GROOTBOEKCODE_SHIPPING_COSTS_BTW_HOOG",
-        "SNELSTART_GROOTBOEKCODE_SHIPPING_COSTS_BTW_GEEN",
-        "SNELSTART_BTW_HOOG_NAME",
-        "SNELSTART_BTW_GEEN_NAME"
-    ),
-}
-
 # Sites app
 SITE_ID = 1
 
 DJANGO_CRON_DELETE_LOGS_OLDER_THAN = 14
+
+UPHANCE_USERNAME = os.environ.get("UPHANCE_USERNAME", None)
+UPHANCE_PASSWORD = os.environ.get("UPHANCE_PASSWORD", None)
+UPHANCE_ORGANISATION = os.environ.get("UPHANCE_ORGANISATION", None)
+UPHANCE_CACHE_PATH = os.environ.get("UPHANCE_CACHE_PATH", ".uphance-cache")
+
+UPHANCE_SECRET = os.environ.get("UPHANCE_SECRET", None)
+
+SNELSTART_CLIENT_KEY = os.environ.get("SNELSTART_CLIENT_KEY", None)
+SNELSTART_SUBSCRIPTION_KEY = os.environ.get("SNELSTART_SUBSCRIPTION_KEY", None)
+SNELSTART_CACHE_PATH = os.environ.get("SNELSTART_CACHE_PATH", ".snelstart-cache")
+
+SENDCLOUD_PUBLIC_KEY = os.environ.get("SENDCLOUD_PUBLIC_KEY", None)
+SENDCLOUD_PRIVATE_KEY = os.environ.get("SENDCLOUD_PRIVATE_KEY", None)

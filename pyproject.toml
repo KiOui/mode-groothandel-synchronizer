@@ -10,9 +10,9 @@ readme = "README.md"
 python = "^3.12"
 Django = "^5.0.4"
 django-import-export = "^3.3.8"
-django-constance = "^3.1.0"
 djangorestframework = "^3.15.1"
 requests = "^2.31.0"
+pytz = "^2024.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.3.0"
@@ -20,6 +20,7 @@ pydocstyle = "^6.1.1"
 flake8 = "^6.0.0"
 freezegun = "^1.2.1"
 tomli = "^2.0.1"
+coverage = "^6.5.0"
 
 [tool.poetry.group.prod.dependencies]
 uwsgi = "^2.0.23"

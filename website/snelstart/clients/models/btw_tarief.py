@@ -4,8 +4,10 @@ from mode_groothandel.clients.utils import get_value_or_error
 
 
 class BtwTarief:
+    """Snelstart Tax type."""
 
     def __init__(self, btw_soort: str, btw_percentage: float, datum_vanaf: datetime, datum_tot_en_met: datetime):
+        """Initialize Snelstart Tax Type."""
         self.btw_soort = btw_soort
         self.btw_percentage = btw_percentage
         self.datum_vanaf = datum_vanaf
@@ -13,6 +15,7 @@ class BtwTarief:
 
     @staticmethod
     def from_data(data: dict) -> "BtwTarief":
+        """Convert a dictionary to a BtwTarief."""
         return BtwTarief(
             btw_soort=str(get_value_or_error(data, "btwSoort")),
             btw_percentage=get_value_or_error(data, "btwPercentage"),

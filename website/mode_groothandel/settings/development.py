@@ -44,14 +44,3 @@ CACHES = {
         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
     }
 }
-
-UPHANCE_USERNAME = os.environ.get("UPHANCE_USERNAME", None)
-UPHANCE_PASSWORD = os.environ.get("UPHANCE_PASSWORD", None)
-UPHANCE_ORGANISATION = os.environ.get("UPHANCE_ORGANISATION", None)
-UPHANCE_CACHE_PATH = os.environ.get("UPHANCE_CACHE_PATH", ".uphance-cache")
-
-UPHANCE_SECRET = "test-secret"
-
-SNELSTART_CLIENT_KEY = os.environ.get("SNELSTART_CLIENT_KEY", None)
-SNELSTART_SUBSCRIPTION_KEY = os.environ.get("SNELSTART_SUBSCRIPTION_KEY", None)
-SNELSTART_CACHE_PATH = os.environ.get("SNELSTART_CACHE_PATH", ".snelstart-cache")

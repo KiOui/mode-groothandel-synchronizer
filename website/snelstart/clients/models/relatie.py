@@ -13,7 +13,7 @@ class Relatie:
     @staticmethod
     def from_data(data: dict) -> "Relatie":
         return Relatie(
-            _id=str(get_value_or_error(data, 'id')),
-            naam=str(get_value_or_error(data, 'naam')),
-            email=str(get_value_or_none(data, 'email')),
+            _id=str(get_value_or_error(data, "id")),
+            naam=str(get_value_or_error(data, "naam")),
+            email=str(get_value_or_none(data, "email")),
         )

@@ -12,6 +12,8 @@ ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(",")
 
 SESSION_COOKIE_SECURE = True
 
+CSRF_TRUSTED_ORIGINS = ['http://synchronize.mode-groothandel.nl', 'https://synchronize.mode-groothandel.nl']
+
 
 # Databases
 # https://docs.djangoproject.com/en/3.2/ref/databases/
@@ -54,7 +56,7 @@ LOGGING = {
         "file": {
             "level": "ERROR",
             "class": "logging.FileHandler",
-            "filename": "/var/log/django.log",
+            "filename": "/log/django.log",
         },
     },
     "loggers": {

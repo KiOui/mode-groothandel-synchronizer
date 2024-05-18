@@ -67,7 +67,9 @@ def refresh_cached_tax_types() -> (int, int, int):
 
     for tax_type in tax_types:
         try:
-            cached_tax_type = CachedBtwTarief.objects.get(btw_soort=tax_type.btw_soort, datum_vanaf=timezone.localize(tax_type.datum_vanaf))
+            cached_tax_type = CachedBtwTarief.objects.get(
+                btw_soort=tax_type.btw_soort, datum_vanaf=timezone.localize(tax_type.datum_vanaf)
+            )
             cached_tax_type.btw_percentage = tax_type.btw_percentage
             cached_tax_type.datum_tot_en_met = timezone.localize(tax_type.datum_tot_en_met)
             cached_tax_type.save()

@@ -1,7 +1,10 @@
 from typing import List, Optional
 
-from mode_groothandel.clients.utils import get_value_or_error, apply_from_data_to_list_or_error, \
-    apply_from_data_to_list_or_none
+from mode_groothandel.clients.utils import (
+    get_value_or_error,
+    apply_from_data_to_list_or_error,
+    apply_from_data_to_list_or_none,
+)
 from uphance.clients.models.customer_address import CustomerAddress
 from uphance.clients.models.person import Person
 

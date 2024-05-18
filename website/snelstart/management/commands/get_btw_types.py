@@ -35,4 +35,4 @@ class Command(BaseCommand):
         btw_types = sorted(btw_types, key=cmp_to_key(compare))
 
         for btw_type in btw_types:
-            print(f"\"{btw_type.btw_soort}\" ({btw_type.btw_percentage}%) from {btw_type.datum_vanaf}")
+            print(f'"{btw_type.btw_soort}" ({btw_type.btw_percentage}%) from {btw_type.datum_vanaf}')
