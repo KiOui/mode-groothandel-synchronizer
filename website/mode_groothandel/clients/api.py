@@ -144,7 +144,6 @@ class ApiClient(abc.ABC):
             results = response.json()
         except requests.exceptions.HTTPError as http_error:
             response = http_error.response
-            print(response.text)
             try:
                 json_response = response.json()
                 error = json_response.get("error", {})

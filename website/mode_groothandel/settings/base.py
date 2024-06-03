@@ -12,10 +12,11 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "users",
     "mutations",
-    "invoices",
     "sendcloud",
     "snelstart",
     "uphance",
+    "invoices",
+    "credit_notes",
     "mode_groothandel",
 ]
 

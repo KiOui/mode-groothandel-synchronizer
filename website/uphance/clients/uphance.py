@@ -8,6 +8,7 @@ from mode_groothandel.clients.cache.cache import CacheFileHandler
 from mode_groothandel.clients.utils import get_value_or_error, get_value_or_none, apply_from_data_or_error
 from uphance.clients.authentication import UphanceAuthClient
 from uphance.clients.models.api_page import ApiPage
+from uphance.clients.models.credit_note import CreditNote
 from uphance.clients.models.customer import Customer
 from uphance.clients.models.invoice import Invoice
 
@@ -105,16 +106,16 @@ class Uphance(ApiClient):
         response = self._get(url)
         return UphancePaginatedResponse.from_data(response)
 
-    def credit_note(self, credit_note_id: int) -> dict:
+    def credit_note(self, credit_note_id: int) -> CreditNote:
         url = f"credit_notes/{credit_note_id}"
         data = self._get(url)
-        return get_value_or_error(data, "credit_notes")
+        return apply_from_data_or_error(CreditNote.from_data, data, "credit_notes")
 
-    def credit_notes(self, since_id: Optional[int] = None, page: int = 1) -> UphancePaginatedResponse:
+    def credit_notes(self, since_id: Optional[int] = None, page: int = 1) -> ApiPage[CreditNote]:
         queries = [("since_id", str(since_id) if since_id is not None else None), ("page", str(page))]
         url = "credit_notes/" + self._create_querystring_safe(queries)
         response = self._get(url)
-        return UphancePaginatedResponse.from_data(response)
+        return ApiPage.from_response(response, "credit_notes", CreditNote.from_data)
 
     def pick_ticket(self, pick_ticket_id: int) -> dict:
         url = f"pick_tickets/{pick_ticket_id}"
