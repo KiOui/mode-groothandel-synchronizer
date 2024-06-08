@@ -109,7 +109,7 @@ class Invoice:
             shipping_tax=float(get_value_or_error(data, "shipping_tax")),
             settlement_discount_percentage=float(get_value_or_error(data, "settlement_discount_percentage")),
             invoice_number=int(get_value_or_error(data, "invoice_number")),
-            due_date=datetime.strptime(str(get_value_or_error(data, "due_date")), "%Y-%m-%d"),
+            due_date=parser.parse(str(get_value_or_error(data, "due_date"))),
             invoice_type=get_value_or_error(data, "invoice_type"),
             total_paid=float(get_value_or_error(data, "total_paid")),
             total_credited=float(get_value_or_error(data, "total_credited")),

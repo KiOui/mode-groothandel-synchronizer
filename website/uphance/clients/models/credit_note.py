@@ -9,7 +9,32 @@ from uphance.clients.models.line_item import LineItem
 
 class CreditNote:
 
-    def __init__(self, _id: int, created_at: datetime, updated_at: datetime, items_total: float, items_tax: float, subtotal: float, total_tax: float, grand_total: float, total_quantity: int, overpayment: Optional[Any], reference: Optional[Any], total_credited: float, total_refunded: float, amount_outstanding: float, settlement_discount_percentage: float, freeform_amount: Optional[float], freeform_description: str, freeform_tax: Optional[Any], organisation_id: int, credit_note_number: int, order_number: int, warehouse_name: str, line_items: List[LineItem]):
+    def __init__(
+        self,
+        _id: int,
+        created_at: datetime,
+        updated_at: datetime,
+        items_total: float,
+        items_tax: float,
+        subtotal: float,
+        total_tax: float,
+        grand_total: float,
+        total_quantity: int,
+        overpayment: Optional[Any],
+        reference: Optional[Any],
+        total_credited: float,
+        total_refunded: float,
+        amount_outstanding: float,
+        settlement_discount_percentage: float,
+        freeform_amount: Optional[float],
+        freeform_description: str,
+        freeform_tax: Optional[Any],
+        organisation_id: int,
+        credit_note_number: int,
+        order_number: int,
+        warehouse_name: str,
+        line_items: List[LineItem],
+    ):
         self.id = _id
         self.created_at = created_at
         self.updated_at = updated_at

@@ -11,6 +11,7 @@ from uphance.clients.models.api_page import ApiPage
 from uphance.clients.models.credit_note import CreditNote
 from uphance.clients.models.customer import Customer
 from uphance.clients.models.invoice import Invoice
+from uphance.clients.models.sales_order import SalesOrder
 
 logger = logging.getLogger(__name__)
 
@@ -97,14 +98,15 @@ class Uphance(ApiClient):
         response = self._get(url)
         return ApiPage.from_response(response, "invoices", Invoice.from_data)
 
-    def order(self, order_id: int) -> dict:
+    def order(self, order_id: int) -> SalesOrder:
         url = f"sales_orders/{order_id}"
-        return self._get(url)
+        response = self._get(url)
+        return SalesOrder.from_data(response)
 
-    def orders(self, order_number: Optional[int]) -> UphancePaginatedResponse:
+    def orders(self, order_number: Optional[int]) -> ApiPage[SalesOrder]:
         url = "sales_orders/" + self._create_querystring_safe([("by_order_number", str(order_number))])
         response = self._get(url)
-        return UphancePaginatedResponse.from_data(response)
+        return ApiPage.from_response(response, "sales_orders", SalesOrder.from_data)
 
     def credit_note(self, credit_note_id: int) -> CreditNote:
         url = f"credit_notes/{credit_note_id}"

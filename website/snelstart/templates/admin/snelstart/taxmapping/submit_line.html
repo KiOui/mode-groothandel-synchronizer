@@ -9,8 +9,8 @@
 {% endif %}
 <input type="submit" value="Refresh Tax Types" name="_refresh_tax_types" id="refresh-tax-types">
 <script>
-    const refresh_button = document.getElementById('refresh-tax-types');
-    refresh_button.onclick = function(event) {
+    const refresh_button_tax_types = document.getElementById('refresh-tax-types');
+    refresh_button_tax_types.onclick = function(event) {
         if (!confirm("Are you sure you want to refresh cached tax types? All information entered will " +
             "be lost.")) {
             event.preventDefault();
@@ -19,8 +19,8 @@
 </script>
 <input type="submit" value="Refresh Grootboekcodes" name="_refresh_grootboekcodes" id="refresh-grootboekcodes">
 <script>
-    const refresh_button = document.getElementById('refresh-grootboekcodes');
-    refresh_button.onclick = function(event) {
+    const refresh_button_grootboeken = document.getElementById('refresh-grootboekcodes');
+    refresh_button_grootboeken.onclick = function(event) {
         if (!confirm("Are you sure you want to refresh cached grootboekcodes? All information entered will " +
             "be lost.")) {
             event.preventDefault();

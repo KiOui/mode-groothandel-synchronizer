@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import List, Optional
+from dateutil import parser
 
 from mode_groothandel.clients.utils import get_value_or_error, apply_from_data_to_list_or_none, get_value_or_none
 from snelstart.clients.models.rgs_code import RgsCode
@@ -40,7 +41,7 @@ class Grootboek:
     @staticmethod
     def from_data(data: dict) -> "Grootboek":
         return Grootboek(
-            modified_on=datetime.strptime(str(get_value_or_error(data, "modifiedOn")), "%Y-%m-%dT%H:%M:%S.%f"),
+            modified_on=parser.parse(str(get_value_or_error(data, "modifiedOn"))),
             omschrijving=str(get_value_or_error(data, "omschrijving")),
             kostenplaats_verplicht=bool(get_value_or_error(data, "kostenplaatsVerplicht")),
             rekening_code=str(get_value_or_error(data, "rekeningCode")),

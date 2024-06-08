@@ -53,7 +53,9 @@ class Command(BaseCommand):
         for credit_note_id in credit_notes:
             try:
                 credit_note = uphance_client.credit_note(credit_note_id)
-                print(credit_note)
-                try_create_credit_note(uphance_client, snelstart_client, credit_note, Mutation.TRIGGER_MANUAL)
+                if credit_note is not None:
+                    try_create_credit_note(uphance_client, snelstart_client, credit_note, Mutation.TRIGGER_MANUAL)
+                else:
+                    logger.warning(f"Invoice {credit_note_id} was not found in Uphance!")
             except ApiException as e:
                 logger.error(f"An API exception occurred while synchronizing invoice {credit_note_id}: {e}")

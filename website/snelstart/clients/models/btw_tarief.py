@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from dateutil import parser
+
 from mode_groothandel.clients.utils import get_value_or_error
 
 
@@ -19,8 +21,8 @@ class BtwTarief:
         return BtwTarief(
             btw_soort=str(get_value_or_error(data, "btwSoort")),
             btw_percentage=get_value_or_error(data, "btwPercentage"),
-            datum_vanaf=datetime.strptime(str(get_value_or_error(data, "datumVanaf")), "%Y-%m-%dT%H:%M:%S"),
-            datum_tot_en_met=datetime.strptime(str(get_value_or_error(data, "datumTotEnMet")), "%Y-%m-%dT%H:%M:%S"),
+            datum_vanaf=parser.parse(str(get_value_or_error(data, "datumVanaf"))),
+            datum_tot_en_met=parser.parse(str(get_value_or_error(data, "datumTotEnMet"))),
         )
 
     def __str__(self):
