@@ -17,6 +17,7 @@ INSTALLED_APPS = [
     "uphance",
     "invoices",
     "credit_notes",
+    "pick_tickets",
     "mode_groothandel",
 ]
 
@@ -134,3 +135,4 @@ SNELSTART_CACHE_PATH = os.environ.get("SNELSTART_CACHE_PATH", ".snelstart-cache"
 
 SENDCLOUD_PUBLIC_KEY = os.environ.get("SENDCLOUD_PUBLIC_KEY", None)
 SENDCLOUD_PRIVATE_KEY = os.environ.get("SENDCLOUD_PRIVATE_KEY", None)
+SENDCLOUD_SHIPPING_METHOD = os.environ.get("SENDCLOUD_SHIPPING_METHOD", None)

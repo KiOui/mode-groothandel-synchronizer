@@ -43,7 +43,7 @@ class ApiClient(abc.ABC):
         auth: Optional[str] = None,
         requests_session=True,
         auth_manager: Optional[AuthClient] = None,
-        requests_timeout: int = 5,
+        requests_timeout: int = 10,
         status_forcelist=None,
         retries: int = 3,
         status_retries: int = 3,

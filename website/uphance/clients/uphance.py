@@ -11,42 +11,10 @@ from uphance.clients.models.api_page import ApiPage
 from uphance.clients.models.credit_note import CreditNote
 from uphance.clients.models.customer import Customer
 from uphance.clients.models.invoice import Invoice
+from uphance.clients.models.pick_ticket import PickTicket
 from uphance.clients.models.sales_order import SalesOrder
 
 logger = logging.getLogger(__name__)
-
-
-class UphancePaginatedResponse:
-
-    def __init__(
-        self,
-        current_page: int,
-        next_page: Optional[int],
-        previous_page: Optional[int],
-        total_pages: int,
-        total_count: int,
-        data,
-    ):
-        self.current_page = current_page
-        self.next_page = next_page
-        self.previous_page = previous_page
-        self.total_pages = total_pages
-        self.total_count = total_count
-        self.data = data
-
-    @staticmethod
-    def from_data(data: dict) -> "UphancePaginatedResponse":
-        metadata = get_value_or_error(data, "meta")
-        del data["meta"]
-
-        return UphancePaginatedResponse(
-            get_value_or_error(metadata, "current_page"),
-            get_value_or_none(metadata, "next_page"),
-            get_value_or_none(metadata, "prev_page"),
-            get_value_or_error(metadata, "total_pages"),
-            get_value_or_error(metadata, "total_count"),
-            data,
-        )
 
 
 class Uphance(ApiClient):
@@ -119,16 +87,16 @@ class Uphance(ApiClient):
         response = self._get(url)
         return ApiPage.from_response(response, "credit_notes", CreditNote.from_data)
 
-    def pick_ticket(self, pick_ticket_id: int) -> dict:
+    def pick_ticket(self, pick_ticket_id: int) -> PickTicket:
         url = f"pick_tickets/{pick_ticket_id}"
         data = self._get(url)
-        return get_value_or_error(data, "pick_ticket")
+        return apply_from_data_or_error(PickTicket.from_data, data, "pick_ticket")
 
-    def pick_tickets(self, since_id: Optional[int] = None, page: int = 1) -> UphancePaginatedResponse:
+    def pick_tickets(self, since_id: Optional[int] = None, page: int = 1) -> ApiPage[PickTicket]:
         queries = [("since_id", str(since_id) if since_id is not None else None), ("page", str(page))]
         url = "pick_tickets/" + self._create_querystring_safe(queries)
         response = self._get(url)
-        return UphancePaginatedResponse.from_data(response)
+        return ApiPage.from_response(response, "pick_tickets", PickTicket.from_data)
 
     def customer_by_id(self, customer_id: int) -> Customer:
         response = self._get("customers/" + str(customer_id))

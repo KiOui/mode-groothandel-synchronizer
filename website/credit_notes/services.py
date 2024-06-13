@@ -186,6 +186,7 @@ def try_update_credit_note(
             success=False,
             message=f"Unable to update credit note {credit_note.id} because no Snelstart ID was found in the database",
         )
+        return
 
     try:
         credit_note_converted = setup_credit_note_for_synchronisation(uphance_client, snelstart_client, credit_note)

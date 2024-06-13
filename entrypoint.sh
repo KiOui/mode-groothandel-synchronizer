@@ -1,4 +1,29 @@
 #!/bin/sh
-chown -R nobody:nogroup /app/cache
+
+touch -a /log/uwsgi.log
+touch -a /log/django.log
+
+chown --recursive nobody:nogroup /log/
+
+chown --recursive nobody:nogroup /app
 python manage.py migrate --noinput
-uwsgi --http :80 --wsgi-file /app/mode_groothandel/wsgi.py --master --processes 4 --threads 2 --uid nobody --gid nogroup --disable-logging --py-call-uwsgi-fork-hooks --enable-threads
+
+uwsgi --chdir=/app \
+    --module=mode_groothandel.wsgi:application \
+    --master --pidfile=/tmp/project-master.pid \
+    --socket=:8000 \
+    --processes=5 \
+    --uid=nobody --gid=nogroup \
+    --harakiri=20 \
+    --post-buffering=16384 \
+    --max-requests=5000 \
+    --thunder-lock \
+    --vacuum \
+    --logfile-chown \
+    --logto2=/log/uwsgi.log \
+    --ignore-sigpipe \
+    --ignore-write-errors \
+    --disable-write-exception \
+    --enable-threads \
+    --py-call-uwsgi-fork-hooks \
+    --buffer-size 32768

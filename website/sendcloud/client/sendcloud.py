@@ -1,5 +1,5 @@
 import logging
-from typing import Optional, List
+from typing import Optional, List, Any
 
 from django.conf import settings
 
@@ -41,6 +41,26 @@ class Sendcloud(ApiClient):
     def api_url(self) -> str:
         """Retrieve the API prefix."""
         return self.prefix
+
+    def create_parcel(self, parcel) -> Any:
+        """Create a parcel in Sendcloud."""
+        return self._post(
+            "parcels",
+            payload=parcel,
+        )
+
+    def update_parcel(self, parcel) -> Any:
+        """Update a parcel in Sendcloud."""
+        return self._put(
+            "parcels",
+            payload=parcel
+        )
+
+    def cancel_parcel(self, parcel_id: str) -> Any:
+        """Cancel (remove) a parcel from Sendcloud."""
+        return self._post(
+            f"parcels/{parcel_id}/cancel"
+        )
 
     def get_shipping_methods(self) -> List[ShippingMethod]:
         """Retrieve shipping methods."""

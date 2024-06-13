@@ -175,6 +175,7 @@ def try_update_invoice(
             success=False,
             message=f"Unable to update invoice {invoice.id} because no Snelstart ID was found in the database",
         )
+        return
 
     try:
         invoice_converted = setup_invoice_for_synchronisation(uphance_client, snelstart_client, invoice)
