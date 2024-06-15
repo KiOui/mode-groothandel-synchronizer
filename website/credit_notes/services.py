@@ -86,7 +86,7 @@ def construct_order_and_tax_line_items(
 
 
 def setup_credit_note_for_synchronisation(
-    uphance_client: Uphance, snelstart_client: Snelstart, credit_note: UphanceCreditNote
+    uphance_client: Uphance, snelstart_client: Snelstart, credit_note: UphanceCreditNote, trigger
 ) -> dict:
     """Setup a credit note from Uphance for synchronisation to Snelstart."""
     try:
@@ -108,7 +108,7 @@ def setup_credit_note_for_synchronisation(
         )
 
     grootboek_regels, tax_lines = construct_order_and_tax_line_items(credit_note)
-    snelstart_relatie_for_order = get_or_create_snelstart_relatie_with_name(snelstart_client, customer)
+    snelstart_relatie_for_order = get_or_create_snelstart_relatie_with_name(snelstart_client, customer, trigger)
 
     if snelstart_relatie_for_order is None:
         raise SynchronizationError(
@@ -189,7 +189,9 @@ def try_update_credit_note(
         return
 
     try:
-        credit_note_converted = setup_credit_note_for_synchronisation(uphance_client, snelstart_client, credit_note)
+        credit_note_converted = setup_credit_note_for_synchronisation(
+            uphance_client, snelstart_client, credit_note, trigger
+        )
         try:
             snelstart_client.update_verkoopboeking(credit_note_in_database.snelstart_id, credit_note_converted)
         except ApiException as e:
@@ -221,7 +223,9 @@ def try_create_credit_note(
     credit_note_in_database = get_or_create_credit_note_in_database(credit_note)
 
     try:
-        credit_note_converted = setup_credit_note_for_synchronisation(uphance_client, snelstart_client, credit_note)
+        credit_note_converted = setup_credit_note_for_synchronisation(
+            uphance_client, snelstart_client, credit_note, trigger
+        )
         try:
             verkoopboeking = snelstart_client.add_verkoopboeking(credit_note_converted)
         except ApiException as e:

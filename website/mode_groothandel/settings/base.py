@@ -16,6 +16,7 @@ INSTALLED_APPS = [
     "sendcloud",
     "snelstart",
     "uphance",
+    "customers",
     "invoices",
     "credit_notes",
     "pick_tickets",

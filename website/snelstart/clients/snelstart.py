@@ -82,6 +82,14 @@ class Snelstart(ApiClient):
         response = self._get(url)
         return [Relatie.from_data(x) for x in response]
 
+    def get_relatie(self, snelstart_id: str) -> Relatie:
+        response = self._get(f"relaties/{snelstart_id}")
+        return Relatie.from_data(response)
+
+    def update_relatie(self, snelstart_id: str, relatie: Any) -> Relatie:
+        response = self._put(f"relaties/{snelstart_id}", payload=relatie)
+        return Relatie.from_data(response)
+
     def add_relatie(self, relatie: Any) -> Relatie:
         response = self._post("relaties", payload=relatie)
         return Relatie.from_data(response)

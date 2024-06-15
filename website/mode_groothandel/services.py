@@ -1,7 +1,9 @@
 from typing import Optional
 
+from customers.models import Customer
 from mode_groothandel.clients.api import ApiException
 from mode_groothandel.exceptions import SynchronizationError
+from mutations.models import Mutation
 
 from snelstart.clients.models.relatie import Relatie as SnelstartRelatie
 from snelstart.models import CachedLand
@@ -41,30 +43,108 @@ def retrieve_address_info_from_uphance_customer(customer: UphanceCustomer) -> Op
 
 
 def get_or_create_snelstart_relatie_with_name(
-    snelstart_client: Snelstart, customer: UphanceCustomer
+    snelstart_client: Snelstart, customer: UphanceCustomer, trigger
 ) -> SnelstartRelatie:
     """Get or create a Snelstart relation with a name."""
+    customer_in_database, _ = Customer.objects.get_or_create(uphance_id=customer.id)
+    customer_in_database.uphance_name = customer.name
+    customer_in_database.save()
+
+    address = retrieve_address_info_from_uphance_customer(customer)
+    if address is not None:
+        address = convert_address_information(address)
+
     name = customer.name
     # Snelstart relatie names can be a maximum of 50 characters long
     if len(name) > 50:
         name = name[:50]
 
+    if customer_in_database.snelstart_id is not None:
+        # We have already matched this customer once.
+        try:
+            relatie = snelstart_client.update_relatie(
+                customer_in_database.snelstart_id, {"relatieSoort": ["Klant"], "naam": name, "address": address}
+            )
+        except ApiException as e:
+            Mutation.objects.create(
+                method=Mutation.METHOD_UPDATE,
+                trigger=trigger,
+                on=customer_in_database,
+                success=False,
+                message=f"An error occurred while updating relation {customer_in_database.snelstart_id} in Snelstart: {e}",
+            )
+            raise SynchronizationError(
+                f"An error occurred while updating relation {customer_in_database.snelstart_id} in Snelstart: {e}"
+            )
+
+        customer_in_database.snelstart_name = name
+        customer_in_database.save()
+
+        Mutation.objects.create(
+            method=Mutation.METHOD_UPDATE,
+            trigger=trigger,
+            on=customer_in_database,
+            success=True,
+            message=None,
+        )
+
+        return relatie
+
+    # We have not matched this customer, we should first search for a match in Snelstart.
     name_escaped = name.replace("'", "''")
     try:
         relaties = snelstart_client.get_relaties(_filter=f"Naam eq '{name_escaped}'")
     except ApiException as e:
         raise SynchronizationError(f"An error occurred while retrieving relations for name {name} from Snelstart: {e}")
 
-    if len(relaties) == 1:
-        return relaties[0]
-    elif len(relaties) > 1:
+    if len(relaties) > 1:
+        Mutation.objects.create(
+            method=Mutation.METHOD_CREATE,
+            trigger=trigger,
+            on=customer_in_database,
+            success=False,
+            message=f"Multiple relaties found in Snelstart for {name} (Uphance ID: {customer.id})",
+        )
         raise SynchronizationError(f"Multiple relaties found in snelstart for relatie {name}")
+    elif len(relaties) == 1:
+        relatie = relaties[0]
+        customer_in_database.snelstart_id = relatie.id
+        customer_in_database.snelstart_name = relatie.naam
+        customer_in_database.save()
 
-    address = retrieve_address_info_from_uphance_customer(customer)
-    if address is not None:
-        address = convert_address_information(address)
+        Mutation.objects.create(
+            method=Mutation.METHOD_CREATE,
+            trigger=trigger,
+            on=customer_in_database,
+            success=True,
+            message=None,
+        )
 
-    try:
-        return snelstart_client.add_relatie({"relatieSoort": ["Klant"], "naam": name, "address": address})
-    except ApiException as e:
-        raise SynchronizationError(f"An error occurred while adding a relation with name {name} to Snelstart: {e}")
+        return relatie
+    else:
+        try:
+            relatie = snelstart_client.add_relatie({"relatieSoort": ["Klant"], "naam": name, "address": address})
+        except ApiException as e:
+            Mutation.objects.create(
+                method=Mutation.METHOD_CREATE,
+                trigger=trigger,
+                on=customer_in_database,
+                success=False,
+                message=f"An error occurred while adding a relation with name {name} to Snelstart: {e}",
+            )
+
+            raise SynchronizationError(f"An error occurred while adding a relation with name {name} to Snelstart: {e}")
+
+        customer_in_database.snelstart_id = relatie.id
+        customer_in_database.snelstart_name = relatie.naam
+        customer_in_database.save()
+
+        Mutation.objects.create(
+            method=Mutation.METHOD_CREATE,
+            trigger=trigger,
+            on=customer_in_database,
+            success=True,
+            message=None,
+        )
+
+        return relatie

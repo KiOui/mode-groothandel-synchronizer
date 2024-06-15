@@ -87,7 +87,7 @@ def convert_date_to_amount_of_days_until(date: datetime) -> int:
 
 
 def setup_invoice_for_synchronisation(
-    uphance_client: Uphance, snelstart_client: Snelstart, invoice: UphanceInvoice
+    uphance_client: Uphance, snelstart_client: Snelstart, invoice: UphanceInvoice, trigger: int
 ) -> dict:
     """Setup an invoice from Uphance for synchronisation to Snelstart."""
     customer = uphance_client.customer_by_id(invoice.company_id)
@@ -178,7 +178,7 @@ def try_update_invoice(
         return
 
     try:
-        invoice_converted = setup_invoice_for_synchronisation(uphance_client, snelstart_client, invoice)
+        invoice_converted = setup_invoice_for_synchronisation(uphance_client, snelstart_client, invoice, trigger)
         try:
             snelstart_client.update_verkoopboeking(invoice_in_database.snelstart_id, invoice_converted)
         except ApiException as e:
@@ -210,7 +210,7 @@ def try_create_invoice(
     invoice_in_database = get_or_create_invoice_in_database(invoice)
 
     try:
-        invoice_converted = setup_invoice_for_synchronisation(uphance_client, snelstart_client, invoice)
+        invoice_converted = setup_invoice_for_synchronisation(uphance_client, snelstart_client, invoice, trigger)
         try:
             verkoopboeking = snelstart_client.add_verkoopboeking(invoice_converted)
         except ApiException as e:
