@@ -51,16 +51,11 @@ class Sendcloud(ApiClient):
 
     def update_parcel(self, parcel) -> Any:
         """Update a parcel in Sendcloud."""
-        return self._put(
-            "parcels",
-            payload=parcel
-        )
+        return self._put("parcels", payload=parcel)
 
     def cancel_parcel(self, parcel_id: str) -> Any:
         """Cancel (remove) a parcel from Sendcloud."""
-        return self._post(
-            f"parcels/{parcel_id}/cancel"
-        )
+        return self._post(f"parcels/{parcel_id}/cancel")
 
     def get_shipping_methods(self) -> List[ShippingMethod]:
         """Retrieve shipping methods."""

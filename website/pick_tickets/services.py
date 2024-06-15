@@ -10,7 +10,6 @@ from mutations.models import Mutation
 from pick_tickets.models import PickTicket
 from sendcloud.client.sendcloud import Sendcloud
 from sendcloud.client.models.shipping_method import ShippingMethod as SendcloudShippingMethod
-from uphance.clients.uphance import Uphance
 from uphance.clients.models.pick_ticket import PickTicket as UphancePickTicket
 
 
@@ -67,22 +66,22 @@ def map_parcel_items(pick_ticket: UphancePickTicket) -> List[Any]:
             if line_quantity.quantity > 0:
                 sku = line_quantity.sku_id
                 size = line_quantity.size
-                parcel_items.append({
-                    "description": product_description,
-                    "quantity": line_quantity.quantity,
-                    "sku": sku,
-                    "weight": "0.001",
-                    "value": "{:.02f}".format(line_item.unit_price),
-                    "product_id": product_id,
-                    "properties": {
-                        "color": color,
-                        "size": size,
+                parcel_items.append(
+                    {
+                        "description": product_description,
+                        "quantity": line_quantity.quantity,
+                        "sku": sku,
+                        "weight": "0.001",
+                        "value": "{:.02f}".format(line_item.unit_price),
+                        "product_id": product_id,
+                        "properties": {
+                            "color": color,
+                            "size": size,
+                        },
                     }
-                })
+                )
 
     return parcel_items
-
-
 
 
 def setup_pick_ticket_for_synchronisation(
@@ -127,7 +126,9 @@ def setup_pick_ticket_for_synchronisation(
             "city": pick_ticket.address.city,
             "country": pick_ticket.address.country,
             "postal_code": pick_ticket.address.postcode,
-            "country_state": pick_ticket.address.state if sendcloud_requires_state(pick_ticket.address.country) else None,
+            "country_state": (
+                pick_ticket.address.state if sendcloud_requires_state(pick_ticket.address.country) else None
+            ),
             "parcel_items": map_parcel_items(pick_ticket),
             "weight": "{:.3f}".format(weight),
             "length": length,
@@ -135,13 +136,10 @@ def setup_pick_ticket_for_synchronisation(
             "height": height,
             "total_order_value": pick_ticket.grand_total,
             "total_order_value_currency": pick_ticket.currency,
-            "customs_shipping_type": 2, # Commercial goods
+            "customs_shipping_type": 2,  # Commercial goods
             "is_return": False,
-            "shipment": {
-                "id": shipping_method.id,
-                "name": shipping_method.name
-            },
-            "request_label": False
+            "shipment": {"id": shipping_method.id, "name": shipping_method.name},
+            "request_label": False,
         }
     }
 
@@ -160,22 +158,89 @@ def get_shipping_method(sendcloud_client: Sendcloud) -> SendcloudShippingMethod:
         if shipping_method.name == selected_shipping_method_name:
             return shipping_method
 
-    raise SynchronizationError(f"Shipping method '{selected_shipping_method_name}' could not be found in the shipping methods retrieved from Sendcloud")
+    raise SynchronizationError(
+        f"Shipping method '{selected_shipping_method_name}' could not be found in the shipping methods retrieved from Sendcloud"
+    )
 
 
-def try_delete_pick_ticket(uphance_client: Uphance, sendcloud_client: Sendcloud, pick_ticket: UphancePickTicket, trigger: int) -> None:
-    pass
+def try_delete_pick_ticket(sendcloud_client: Sendcloud, pick_ticket: UphancePickTicket, trigger: int) -> None:
+    pick_ticket_in_database = get_or_create_pick_ticket_in_database(pick_ticket)
+    if pick_ticket_in_database.sendcloud_id is None:
+        Mutation.objects.create(
+            method=Mutation.METHOD_DELETE,
+            trigger=trigger,
+            on=pick_ticket_in_database,
+            success=False,
+            message=f"Unable to delete pick ticket {pick_ticket.id} because no Sendcloud ID was found in the database",
+        )
+
+    try:
+        sendcloud_client.cancel_parcel(pick_ticket_in_database.sendcloud_id)
+        Mutation.objects.create(
+            method=Mutation.METHOD_DELETE,
+            trigger=trigger,
+            on=pick_ticket_in_database,
+            success=True,
+            message=None,
+        )
+    except ApiException as e:
+        Mutation.objects.create(
+            method=Mutation.METHOD_DELETE,
+            trigger=trigger,
+            on=pick_ticket_in_database,
+            success=False,
+            message=f"An API error occurred while deleting pick ticket {pick_ticket.id}: {e}",
+        )
 
 
-def try_update_pick_ticket(
-    uphance_client: Uphance, sendcloud_client: Sendcloud, pick_ticket: UphancePickTicket, trigger: int
-) -> None:
-    pass
+def try_update_pick_ticket(sendcloud_client: Sendcloud, pick_ticket: UphancePickTicket, trigger: int) -> None:
+    pick_ticket_in_database = get_or_create_pick_ticket_in_database(pick_ticket)
+
+    pick_ticket_in_database.shipment_number = pick_ticket.shipment_number
+    pick_ticket_in_database.order_id = pick_ticket.order_id
+    pick_ticket_in_database.sale_id = pick_ticket.sale_id
+    pick_ticket_in_database.save()
+
+    if pick_ticket_in_database.sendcloud_id is None:
+        Mutation.objects.create(
+            method=Mutation.METHOD_UPDATE,
+            trigger=trigger,
+            on=pick_ticket_in_database,
+            success=False,
+            message=f"Unable to update pick ticket {pick_ticket.id} because no Sendcloud ID was found in the database",
+        )
+        return
+
+    try:
+        shipping_method = get_shipping_method(sendcloud_client)
+        pick_ticket_converted = setup_pick_ticket_for_synchronisation(pick_ticket, shipping_method)
+        try:
+            pick_ticket_converted["parcel"]["id"] = pick_ticket_in_database.sendcloud_id
+            sendcloud_client.update_parcel(pick_ticket_converted)
+        except ApiException as e:
+            raise SynchronizationError(
+                f"An error occurred while updating a parcel for pick ticket {pick_ticket.id} to Sendcloud: {e}"
+            )
+        logger.info(f"Successfully updated pick ticket {pick_ticket.id}")
+        Mutation.objects.create(
+            method=Mutation.METHOD_UPDATE,
+            trigger=trigger,
+            on=pick_ticket_in_database,
+            success=True,
+            message=None,
+        )
+    except SynchronizationError as e:
+        logger.error(f"A Synchronization error occurred while updating pick ticket {pick_ticket.id}: {e}")
+        Mutation.objects.create(
+            method=Mutation.METHOD_UPDATE,
+            trigger=trigger,
+            on=pick_ticket_in_database,
+            success=False,
+            message=f"A Synchronization error occurred while updating pick ticket {pick_ticket.id}: {e}",
+        )
 
 
-def try_create_pick_ticket(
-    uphance_client: Uphance, sendcloud_client: Sendcloud, pick_ticket: UphancePickTicket, trigger: int
-) -> None:
+def try_create_pick_ticket(sendcloud_client: Sendcloud, pick_ticket: UphancePickTicket, trigger: int) -> None:
     pick_ticket_in_database = get_or_create_pick_ticket_in_database(pick_ticket)
 
     try:
@@ -188,7 +253,15 @@ def try_create_pick_ticket(
                 f"An error occurred while adding a parcel for pick ticket {pick_ticket.id} to Sendcloud: {e}"
             )
         logger.info(f"Successfully synchronized pick ticket {pick_ticket.id}")
-        # TODO
+        pick_ticket_in_database.sendcloud_id = parcel["parcel"]["id"]
+        pick_ticket_in_database.save()
+        Mutation.objects.create(
+            method=Mutation.METHOD_CREATE,
+            trigger=trigger,
+            on=pick_ticket_in_database,
+            success=True,
+            message=None,
+        )
     except SynchronizationError as e:
         logger.error(f"A Synchronization error occurred for pick ticket {pick_ticket.id}: {e}")
         Mutation.objects.create(

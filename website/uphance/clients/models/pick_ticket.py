@@ -3,8 +3,12 @@ from typing import Optional, List
 
 from dateutil import parser
 
-from mode_groothandel.clients.utils import get_value_or_error, get_value_or_none, apply_from_data_or_error, \
-    apply_from_data_to_list_or_error
+from mode_groothandel.clients.utils import (
+    get_value_or_error,
+    get_value_or_none,
+    apply_from_data_or_error,
+    apply_from_data_to_list_or_error,
+)
 from uphance.clients.models.address import Address
 from uphance.clients.models.line_item import LineItem
 
@@ -12,7 +16,56 @@ from uphance.clients.models.line_item import LineItem
 class PickTicket:
     """Pick Ticket class."""
 
-    def __init__(self, _id: int, created_at: datetime, updated_at: datetime, stock_adjusted_at: Optional[datetime], tracking_number: Optional[str], carrier: Optional[str], service: Optional[str], notes: Optional[str], items_total: float, items_tax: float, subtotal: float, total_tax: float, grand_total: float, total_quantity: int, currency: str, order_number: int, order_id: int, order_source: str, warehouse: str, channel: str, shipment_number: int, commercial_invoice_number: int, organisation_id: int, sale_id: int, customer_id: int, customer_name: str, customer_note: Optional[str], date: datetime, shipping_cost: float, shipping_tax: float, shipping_method: Optional[str], address: Address, contact_name: Optional[str], contact_email: str, contact_phone: str, dimensions: Optional[str], gross_weight: Optional[float], net_weight: Optional[float], gross_weight_unit: str, weight_unit: str, status: str, shipper_email_address: Optional[str], shipping_instructions: Optional[str], payment_terms: str, invoice_numbers: str, estimated_shipping_cost: float, line_items: List[LineItem]):
+    def __init__(
+        self,
+        _id: int,
+        created_at: datetime,
+        updated_at: datetime,
+        stock_adjusted_at: Optional[datetime],
+        tracking_number: Optional[str],
+        carrier: Optional[str],
+        service: Optional[str],
+        notes: Optional[str],
+        items_total: float,
+        items_tax: float,
+        subtotal: float,
+        total_tax: float,
+        grand_total: float,
+        total_quantity: int,
+        currency: str,
+        order_number: int,
+        order_id: int,
+        order_source: str,
+        warehouse: str,
+        channel: str,
+        shipment_number: int,
+        commercial_invoice_number: int,
+        organisation_id: int,
+        sale_id: int,
+        customer_id: int,
+        customer_name: str,
+        customer_note: Optional[str],
+        date: datetime,
+        shipping_cost: float,
+        shipping_tax: float,
+        shipping_method: Optional[str],
+        address: Address,
+        contact_name: Optional[str],
+        contact_email: str,
+        contact_phone: str,
+        dimensions: Optional[str],
+        gross_weight: Optional[float],
+        net_weight: Optional[float],
+        gross_weight_unit: str,
+        weight_unit: str,
+        status: str,
+        shipper_email_address: Optional[str],
+        shipping_instructions: Optional[str],
+        payment_terms: str,
+        invoice_numbers: str,
+        estimated_shipping_cost: float,
+        line_items: List[LineItem],
+    ):
         """Initialise Pick Ticket object."""
         self.id = _id
         self.created_at = created_at
@@ -66,10 +119,14 @@ class PickTicket:
     def from_data(data: dict) -> "PickTicket":
         """Initialise Pick Ticket object from data."""
         return PickTicket(
-            _id=int(get_value_or_none(data, 'id')),
+            _id=int(get_value_or_none(data, "id")),
             created_at=parser.parse(str(get_value_or_error(data, "created_at"))),
             updated_at=parser.parse(str(get_value_or_error(data, "updated_at"))),
-            stock_adjusted_at=None if get_value_or_none(data, "stock_adjusted_at") is None else parser.parse(get_value_or_error(data, "stock_adjusted_at")),
+            stock_adjusted_at=(
+                None
+                if get_value_or_none(data, "stock_adjusted_at") is None
+                else parser.parse(get_value_or_error(data, "stock_adjusted_at"))
+            ),
             tracking_number=get_value_or_none(data, "tracking_number"),
             carrier=get_value_or_none(data, "carrier"),
             service=get_value_or_none(data, "service"),
