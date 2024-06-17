@@ -62,6 +62,7 @@ def match_or_create_snelstart_relatie_with_name(
     if customer_in_database.snelstart_id is not None:
         # We have already matched this customer once.
         try:
+            # TODO: Toevoegen email adres en telefoonnummer
             relatie = snelstart_client.update_relatie(
                 customer_in_database.snelstart_id, {"relatieSoort": ["Klant"], "naam": name, "address": address}
             )

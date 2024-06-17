@@ -7,7 +7,9 @@ from django.core.management import BaseCommand
 
 from invoices.services import try_create_invoice
 from mode_groothandel.clients.api import ApiException
+from mode_groothandel.exceptions import SynchronizationError
 from mutations.models import Mutation
+from pick_tickets.services import try_create_pick_ticket
 from sendcloud.client.sendcloud import Sendcloud
 from snelstart.clients.snelstart import Snelstart
 from uphance.clients.uphance import Uphance
@@ -54,6 +56,14 @@ class Command(BaseCommand):
         for pick_ticket_id in pick_tickets:
             try:
                 pick_ticket = uphance_client.pick_ticket(pick_ticket_id)
-                print(pick_ticket)
             except ApiException as e:
                 logger.error(f"An API exception occurred while synchronizing pick ticket {pick_ticket_id}: {e}")
+                continue
+
+            try:
+                try_create_pick_ticket(sendlcloud_client, pick_ticket, Mutation.TRIGGER_MANUAL)
+            except SynchronizationError as e:
+                logger.error(e)
+                continue
+
+            print(f"Successfully synchronized pick ticket {pick_ticket}")
