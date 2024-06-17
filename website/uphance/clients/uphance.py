@@ -1,11 +1,16 @@
 import logging
-from typing import Optional
+from typing import Optional, List
 
 from django.conf import settings
 
 from mode_groothandel.clients.api import ApiClient
 from mode_groothandel.clients.cache.cache import CacheFileHandler
-from mode_groothandel.clients.utils import get_value_or_error, get_value_or_none, apply_from_data_or_error
+from mode_groothandel.clients.utils import (
+    get_value_or_error,
+    get_value_or_none,
+    apply_from_data_or_error,
+    apply_from_data_to_list_or_error,
+)
 from uphance.clients.authentication import UphanceAuthClient
 from uphance.clients.models.api_page import ApiPage
 from uphance.clients.models.credit_note import CreditNote
@@ -101,3 +106,9 @@ class Uphance(ApiClient):
     def customer_by_id(self, customer_id: int) -> Customer:
         response = self._get("customers/" + str(customer_id))
         return apply_from_data_or_error(Customer.from_data, response, "customer")
+
+    def customers(self, page: int = 1) -> ApiPage[Customer]:
+        queries = [("page", str(page))]
+        url = "customers/" + self._create_querystring_safe(queries)
+        response = self._get(url)
+        return ApiPage.from_response(response, "customers", Customer.from_data)

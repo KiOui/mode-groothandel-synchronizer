@@ -4,6 +4,7 @@ from mode_groothandel.clients.utils import (
     get_value_or_error,
     apply_from_data_to_list_or_error,
     apply_from_data_to_list_or_none,
+    get_value_or_none,
 )
 from uphance.clients.models.customer_address import CustomerAddress
 from uphance.clients.models.person import Person
@@ -15,11 +16,11 @@ class Customer:
         self,
         customer_id: int,
         name: str,
-        country: str,
-        city: str,
+        country: Optional[str],
+        city: Optional[str],
         vat_number: str,
         channel_id: int,
-        notes: str,
+        notes: Optional[str],
         people: List[Person],
         addresses: Optional[List[CustomerAddress]],
     ):
@@ -38,11 +39,11 @@ class Customer:
         return Customer(
             customer_id=int(get_value_or_error(data, "id")),
             name=str(get_value_or_error(data, "name")),
-            country=str(get_value_or_error(data, "country")),
-            city=str(get_value_or_error(data, "city")),
+            country=get_value_or_none(data, "country", str),
+            city=get_value_or_none(data, "city", str),
             vat_number=str(get_value_or_error(data, "vat_number")),
-            channel_id=int(get_value_or_error(data, "channel_id")),
-            notes=str(get_value_or_error(data, "notes")),
+            channel_id=get_value_or_none(data, "channel_id", int),
+            notes=get_value_or_none(data, "notes"),
             people=apply_from_data_to_list_or_error(Person.from_data, data, "people"),
             addresses=apply_from_data_to_list_or_none(CustomerAddress.from_data, data, "addresses"),
         )

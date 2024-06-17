@@ -4,7 +4,7 @@ from typing import List, Dict, Any, Tuple
 from credit_notes.models import CreditNote
 from mode_groothandel.clients.api import ApiException
 from mode_groothandel.exceptions import SynchronizationError
-from mode_groothandel.services import get_or_create_snelstart_relatie_with_name
+from customers.services import match_or_create_snelstart_relatie_with_name
 from mutations.models import Mutation
 from snelstart.clients.snelstart import Snelstart
 from snelstart.models import TaxMapping
@@ -108,7 +108,7 @@ def setup_credit_note_for_synchronisation(
         )
 
     grootboek_regels, tax_lines = construct_order_and_tax_line_items(credit_note)
-    snelstart_relatie_for_order = get_or_create_snelstart_relatie_with_name(snelstart_client, customer, trigger)
+    snelstart_relatie_for_order = match_or_create_snelstart_relatie_with_name(snelstart_client, customer, trigger)
 
     if snelstart_relatie_for_order is None:
         raise SynchronizationError(

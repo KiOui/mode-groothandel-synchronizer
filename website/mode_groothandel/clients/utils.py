@@ -1,15 +1,22 @@
 from typing import Optional, List, Any
 
 
-def get_value_or_none(data: dict, key: str) -> Optional[Any]:
+def get_value_or_none(data: dict, key: str, set_type=None) -> Optional[Any]:
     """
     Get a value from a dictionary or return None.
 
     :param data: The dictionary to get the value from.
     :param key: The key to return the value of, if the key does not exist None is returned.
+    :param set_type: Whether to convert the type to something.
     :return: The value present at data[key] if the key is present, else None.
     """
-    return data[key] if key in data else None
+    if key in data:
+        value = data[key]
+        if set_type is not None and value is not None:
+            value = set_type(value)
+        return value
+    else:
+        return None
 
 
 def get_value_or_default(data: dict, key: str, default: Optional[Any]) -> Optional[Any]:

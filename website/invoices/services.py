@@ -5,7 +5,7 @@ from typing import List, Tuple, Dict, Any
 from invoices.models import Invoice
 from mode_groothandel.clients.api import ApiException
 from mode_groothandel.exceptions import SynchronizationError
-from mode_groothandel.services import get_or_create_snelstart_relatie_with_name
+from customers.services import match_or_create_snelstart_relatie_with_name
 from mutations.models import Mutation
 from snelstart.clients.snelstart import Snelstart
 from snelstart.models import TaxMapping
@@ -92,7 +92,7 @@ def setup_invoice_for_synchronisation(
     """Setup an invoice from Uphance for synchronisation to Snelstart."""
     customer = uphance_client.customer_by_id(invoice.company_id)
     grootboek_regels, tax_lines = construct_order_and_tax_line_items(invoice)
-    snelstart_relatie_for_order = get_or_create_snelstart_relatie_with_name(snelstart_client, customer)
+    snelstart_relatie_for_order = match_or_create_snelstart_relatie_with_name(snelstart_client, customer, trigger)
     betalingstermijn = convert_date_to_amount_of_days_until(invoice.due_date)
 
     if snelstart_relatie_for_order is None:

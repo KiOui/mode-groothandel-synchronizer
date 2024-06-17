@@ -42,7 +42,7 @@ def retrieve_address_info_from_uphance_customer(customer: UphanceCustomer) -> Op
     return None
 
 
-def get_or_create_snelstart_relatie_with_name(
+def match_or_create_snelstart_relatie_with_name(
     snelstart_client: Snelstart, customer: UphanceCustomer, trigger
 ) -> SnelstartRelatie:
     """Get or create a Snelstart relation with a name."""
