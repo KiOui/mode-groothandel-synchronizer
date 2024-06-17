@@ -106,7 +106,7 @@ def setup_pick_ticket_for_synchronisation(
         width, length, height = dimensions
 
     if pick_ticket.gross_weight is not None:
-        weight = convert_weight_to_kg(pick_ticket.gross_weight)
+        weight = convert_weight_to_kg(pick_ticket.gross_weight, pick_ticket.gross_weight_unit)
     else:
         weight = 0.001
 

@@ -64,7 +64,8 @@ def match_or_create_snelstart_relatie_with_name(
         try:
             # TODO: Toevoegen email adres en telefoonnummer
             relatie = snelstart_client.update_relatie(
-                customer_in_database.snelstart_id, {"relatieSoort": ["Klant"], "naam": name, "address": address}
+                customer_in_database.snelstart_id,
+                {"id": customer_in_database.snelstart_id, "relatieSoort": ["Klant"], "naam": name, "address": address},
             )
         except ApiException as e:
             Mutation.objects.create(

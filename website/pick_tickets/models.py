@@ -11,7 +11,6 @@ class PickTicket(models.Model):
     shipment_number = models.IntegerField()
     order_id = models.IntegerField()
     sale_id = models.IntegerField()
-    shipped = models.BooleanField()
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 

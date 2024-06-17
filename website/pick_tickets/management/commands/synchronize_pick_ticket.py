@@ -56,14 +56,10 @@ class Command(BaseCommand):
         for pick_ticket_id in pick_tickets:
             try:
                 pick_ticket = uphance_client.pick_ticket(pick_ticket_id)
+                try:
+                    try_create_pick_ticket(sendlcloud_client, pick_ticket, Mutation.TRIGGER_MANUAL)
+                    print(f"Successfully synchronized pick ticket {pick_ticket}")
+                except SynchronizationError as e:
+                    logger.error(e)
             except ApiException as e:
                 logger.error(f"An API exception occurred while synchronizing pick ticket {pick_ticket_id}: {e}")
-                continue
-
-            try:
-                try_create_pick_ticket(sendlcloud_client, pick_ticket, Mutation.TRIGGER_MANUAL)
-            except SynchronizationError as e:
-                logger.error(e)
-                continue
-
-            print(f"Successfully synchronized pick ticket {pick_ticket}")
