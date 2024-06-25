@@ -7,7 +7,7 @@ from mode_groothandel.clients.utils import (
     get_value_or_error,
     get_value_or_none,
     apply_from_data_or_error,
-    apply_from_data_to_list_or_error,
+    apply_from_data_to_list_or_error, get_value_or_default,
 )
 from uphance.clients.models.address import Address
 from uphance.clients.models.line_item import LineItem
@@ -132,7 +132,7 @@ class PickTicket:
             service=get_value_or_none(data, "service"),
             notes=get_value_or_none(data, "notes"),
             items_total=float(get_value_or_error(data, "items_total")),
-            items_tax=float(get_value_or_error(data, "items_tax")),
+            items_tax=float(get_value_or_default(data, "items_tax", 0)),
             subtotal=float(get_value_or_error(data, "subtotal")),
             total_tax=float(get_value_or_error(data, "total_tax")),
             grand_total=float(get_value_or_error(data, "grand_total")),

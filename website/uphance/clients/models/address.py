@@ -12,7 +12,7 @@ class Address:
         line_2: Optional[str],
         line_3: Optional[str],
         city: str,
-        state: str,
+        state: Optional[str],
         country: str,
         postcode: str,
     ):
@@ -33,7 +33,7 @@ class Address:
             line_2=get_value_or_none(data, "line_2", str),
             line_3=get_value_or_none(data, "line_3", str),
             city=str(get_value_or_error(data, "city")),
-            state=str(get_value_or_error(data, "state")),
+            state=get_value_or_none(data, "state", str),
             country=str(get_value_or_error(data, "country")),
             postcode=str(get_value_or_error(data, "postcode")),
         )
