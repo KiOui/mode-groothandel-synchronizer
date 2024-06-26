@@ -7,7 +7,8 @@ from mode_groothandel.clients.utils import (
     get_value_or_error,
     get_value_or_none,
     apply_from_data_or_error,
-    apply_from_data_to_list_or_error, get_value_or_default,
+    apply_from_data_to_list_or_error,
+    get_value_or_default,
 )
 from uphance.clients.models.address import Address
 from uphance.clients.models.line_item import LineItem
@@ -19,8 +20,8 @@ class PickTicket:
     def __init__(
         self,
         _id: int,
-        created_at: datetime,
-        updated_at: datetime,
+        created_at: Optional[datetime],
+        updated_at: Optional[datetime],
         stock_adjusted_at: Optional[datetime],
         tracking_number: Optional[str],
         carrier: Optional[str],
@@ -120,8 +121,16 @@ class PickTicket:
         """Initialise Pick Ticket object from data."""
         return PickTicket(
             _id=int(get_value_or_none(data, "id")),
-            created_at=parser.parse(str(get_value_or_error(data, "created_at"))),
-            updated_at=parser.parse(str(get_value_or_error(data, "updated_at"))),
+            created_at=(
+                parser.parse(get_value_or_none(data, "created_at", str))
+                if get_value_or_none(data, "created_at", str) is not None
+                else None
+            ),
+            updated_at=(
+                parser.parse(get_value_or_none(data, "updated_at", str))
+                if get_value_or_none(data, "created_at", str) is not None
+                else None
+            ),
             stock_adjusted_at=(
                 None
                 if get_value_or_none(data, "stock_adjusted_at") is None
