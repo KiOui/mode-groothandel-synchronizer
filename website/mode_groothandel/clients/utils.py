@@ -24,11 +24,11 @@ def get_value_or_default(data: dict, key: str, default: Optional[Any]) -> Option
     Get a value from a dictionary or return a default value.
 
     :param data: The dictionary to get the value from.
-    :param key: The key to return the value of, if the key does not exist default is returned.
+    :param key: The key to return the value of, if the key does not exist or is None the default is returned.
     :param default: The default value to return if the key does not exist in the dictionary.
     :return: The value present at data[key] if the key is present, else default.
     """
-    return data[key] if key in data else default
+    return data[key] if key in data and data[key] is not None else default
 
 
 def get_value_or_error(data: dict, key: str) -> Any:
