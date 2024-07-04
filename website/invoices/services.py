@@ -100,7 +100,7 @@ def setup_invoice_for_synchronisation(
             f"Failed to synchronize invoice {invoice.invoice_number} because customer {customer.name} could not be found or created in Snelstart."
         )
 
-    invoice_date = invoice.created_at
+    invoice_date = invoice.created_at if invoice.created_at is not None else datetime.now()
 
     return {
         "factuurnummer": invoice.invoice_number,

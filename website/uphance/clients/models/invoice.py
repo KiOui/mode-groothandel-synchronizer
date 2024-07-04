@@ -20,8 +20,8 @@ class Invoice:
     def __init__(
         self,
         invoice_id: int,
-        created_at: datetime,
-        updated_at: datetime,
+        created_at: Optional[datetime],
+        updated_at: Optional[datetime],
         items_total: float,
         items_tax: float,
         subtotal: float,
@@ -97,8 +97,16 @@ class Invoice:
         """Initialize an Invoice object from a dictionary."""
         return Invoice(
             invoice_id=int(get_value_or_error(data, "id")),
-            created_at=parser.parse(str(get_value_or_error(data, "created_at"))),
-            updated_at=parser.parse(str(get_value_or_error(data, "updated_at"))),
+            created_at=(
+                parser.parse(get_value_or_none(data, "created_at", str))
+                if get_value_or_none(data, "created_at", str) is not None
+                else None
+            ),
+            updated_at=(
+                parser.parse(get_value_or_none(data, "updated_at", str))
+                if get_value_or_none(data, "created_at", str) is not None
+                else None
+            ),
             items_total=float(get_value_or_error(data, "items_total")),
             items_tax=float(get_value_or_error(data, "items_tax")),
             subtotal=float(get_value_or_error(data, "subtotal")),

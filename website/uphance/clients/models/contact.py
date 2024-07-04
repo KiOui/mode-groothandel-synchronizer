@@ -6,7 +6,14 @@ from mode_groothandel.clients.utils import get_value_or_error, get_value_or_none
 class Contact:
 
     def __init__(
-        self, first_name: str, last_name: str, position: str, phone_1: str, phone_2: str, email: str, notes: Optional[str]
+        self,
+        first_name: str,
+        last_name: str,
+        position: str,
+        phone_1: str,
+        phone_2: str,
+        email: str,
+        notes: Optional[str],
     ):
         self.first_name = first_name
         self.last_name = last_name
