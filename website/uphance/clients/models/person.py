@@ -1,39 +1,25 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from mode_groothandel.clients.utils import get_value_or_error, get_value_or_none
 
 
+@dataclass
 class Person:
     """Person class."""
 
-    def __init__(
-        self,
-        person_id: int,
-        customer_id: int,
-        first_name: str,
-        last_name: str,
-        position: str,
-        phone_1: Optional[str],
-        phone_2: Optional[str],
-        email: str,
-        notes: Optional[str],
-        buyer: bool,
-        shipping: bool,
-        billing: bool,
-    ):
-        """Initialise Person object."""
-        self.id = person_id
-        self.customer_id = customer_id
-        self.first_name = first_name
-        self.last_name = last_name
-        self.position = position
-        self.phone_1 = phone_1
-        self.phone_2 = phone_2
-        self.email = email
-        self.notes = notes
-        self.buyer = buyer
-        self.shipping = shipping
-        self.billing = billing
+    person_id: int
+    customer_id: int
+    first_name: str
+    last_name: str
+    position: str
+    phone_1: Optional[str]
+    phone_2: Optional[str]
+    email: str
+    notes: Optional[str]
+    buyer: bool
+    shipping: bool
+    billing: bool
 
     @staticmethod
     def from_data(data: dict) -> "Person":

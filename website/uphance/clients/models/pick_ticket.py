@@ -166,7 +166,7 @@ class PickTicket:
             address=apply_from_data_or_error(Address.from_data, data, "address"),
             contact_name=get_value_or_none(data, "contact_name"),
             contact_email=get_value_or_none(data, "contact_email", str),
-            contact_phone=str(get_value_or_error(data, "contact_phone")),
+            contact_phone=get_value_or_none(data, "contact_phone", str),
             dimensions=get_value_or_none(data, "dimensions"),
             gross_weight=get_value_or_none(data, "gross_weight", float),
             net_weight=get_value_or_none(data, "net_weight", float),
