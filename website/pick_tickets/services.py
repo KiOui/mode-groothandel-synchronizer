@@ -271,3 +271,12 @@ def try_create_pick_ticket(sendcloud_client: Sendcloud, pick_ticket: UphancePick
             success=False,
             message=f"A Synchronization error occurred for pick ticket {pick_ticket.id}: {e}",
         )
+
+
+def try_create_or_update_pick_ticket(sendcloud_client: Sendcloud, pick_ticket: UphancePickTicket, trigger: int) -> None:
+    pick_ticket_in_database = get_or_create_pick_ticket_in_database(pick_ticket)
+
+    if pick_ticket_in_database.sendcloud_id is None:
+        return try_create_pick_ticket(sendcloud_client, pick_ticket, trigger)
+    else:
+        return try_update_pick_ticket(sendcloud_client, pick_ticket, trigger)

@@ -8,7 +8,7 @@ from pick_tickets.models import PickTicket
 class PickTicketAdmin(admin.ModelAdmin):
     """Pick Ticket Admin."""
 
-    search_fields = ["uphance_id", "snelstart_id"]
+    search_fields = ["uphance_id", "sendcloud_id", "shipment_number", "order_id", "sale_id"]
 
     list_display = [
         "uphance_id",

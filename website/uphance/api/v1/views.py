@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from credit_notes.services import try_create_credit_note, try_delete_credit_note, try_update_credit_note
 from invoices.services import try_create_invoice, try_delete_invoice, try_update_invoice
 from mutations.models import Mutation
-from pick_tickets.services import try_create_pick_ticket, try_delete_pick_ticket, try_update_pick_ticket
+from pick_tickets.services import try_create_pick_ticket, try_delete_pick_ticket, try_update_pick_ticket, try_create_or_update_pick_ticket
 from sendcloud.client.sendcloud import Sendcloud
 from snelstart.clients.snelstart import Snelstart
 from uphance.clients.models.invoice import Invoice as UphanceInvoice
@@ -156,8 +156,14 @@ class PickTicketCreateUpdateDeleteApiView(APIView):
         sendcloud_client = Sendcloud.get_client()
         try_delete_pick_ticket(sendcloud_client, pick_ticket, Mutation.TRIGGER_WEBHOOK)
 
+    def _create_or_update_pick_ticket(self, pick_ticket: dict):
+        """Create or update a pick ticket in Sendcloud."""
+        pick_ticket = UphancePickTicket.from_data(pick_ticket)
+        sendcloud_client = Sendcloud.get_client()
+        try_create_or_update_pick_ticket(sendcloud_client, pick_ticket, Mutation.TRIGGER_WEBHOOK)
+
     def _update_pick_ticket(self, pick_ticket: dict):
-        """Update a pick ticket in Snelstart."""
+        """Update a pick ticket in Sendcloud."""
         pick_ticket = UphancePickTicket.from_data(pick_ticket)
         sendcloud_client = Sendcloud.get_client()
         try_update_pick_ticket(sendcloud_client, pick_ticket, Mutation.TRIGGER_WEBHOOK)
@@ -175,7 +181,7 @@ class PickTicketCreateUpdateDeleteApiView(APIView):
         if event == "pick_ticket_create":
             self._create_pick_ticket(pick_ticket)
         elif event == "pick_ticket_update":
-            self._update_pick_ticket(pick_ticket)
+            self._create_or_update_pick_ticket(pick_ticket)
         elif event == "pick_ticket_delete":
             self._delete_pick_ticket(pick_ticket)
         else:
