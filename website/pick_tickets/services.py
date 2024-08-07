@@ -116,7 +116,7 @@ def setup_pick_ticket_for_synchronisation(
 
     return {
         "parcel": {
-            "name": pick_ticket.contact_name if pick_ticket.contact_name is not None else pick_ticket.customer_name,
+            "name": pick_ticket.contact_name if pick_ticket.contact_name else pick_ticket.customer_name,
             "company_name": pick_ticket.customer_name,
             "email": pick_ticket.contact_email,
             "telephone": pick_ticket.contact_phone,
