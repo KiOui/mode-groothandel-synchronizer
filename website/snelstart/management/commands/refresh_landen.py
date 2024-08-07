@@ -14,4 +14,4 @@ class Command(BaseCommand):
         """Execute the command."""
         (created, updated, deleted) = refresh_landen()
 
-        print(f"Cached BTW Tarieven refreshed\nCreated: {created}\nUpdated: {updated}\nDeleted: {deleted}")
+        print(f"Cached landen refreshed\nCreated: {created}\nUpdated: {updated}\nDeleted: {deleted}")

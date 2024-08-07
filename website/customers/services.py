@@ -77,7 +77,7 @@ def convert_uphance_customer_to_relatie(customer: UphanceCustomer) -> Dict[str, 
     return {
         "relatieSoort": ["Klant"],
         "naam": name,
-        "address": address,
+        "vestigingsAdres": address,
         "email": email,
         "telefoon": phone,
         "btwNummer": btw_nummer,
