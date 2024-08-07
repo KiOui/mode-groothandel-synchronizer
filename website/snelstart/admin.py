@@ -4,7 +4,7 @@ from django.utils.html import format_html
 
 from mode_groothandel.clients.api import ApiException
 from snelstart.forms import TaxMappingAdminForm
-from snelstart.models import TaxMapping
+from snelstart.models import TaxMapping, CachedLand
 from snelstart.services import refresh_cached_tax_types, refresh_cached_grootboeken
 
 
@@ -54,3 +54,9 @@ class TaxMappingAdmin(admin.ModelAdmin):
             return super(TaxMappingAdmin, self).changeform_view(
                 request, object_id=object_id, form_url=form_url, extra_context=extra_context
             )
+
+
+@admin.register(CachedLand)
+class CachedLandAdmin(admin.ModelAdmin):
+    search_fields = ("naam", "landcode", "landcode_iso", "uphance_country_code")
+    list_display = ("naam", "landcode", "uphance_country_code")

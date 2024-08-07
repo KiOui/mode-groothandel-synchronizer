@@ -115,7 +115,7 @@ def setup_pick_ticket_for_synchronisation(
         weight = 0.001
 
     # Grab only the digits from the phone number.
-    phone_number = re.sub(r'\D', '', pick_ticket.contact_phone) if pick_ticket.contact_phone is not None else None
+    phone_number = re.sub(r"\D", "", pick_ticket.contact_phone) if pick_ticket.contact_phone is not None else None
 
     return {
         "parcel": {
@@ -278,7 +278,9 @@ def try_create_pick_ticket(sendcloud_client: Sendcloud, pick_ticket: UphancePick
         )
 
 
-def try_create_or_update_pick_ticket(sendcloud_client: Sendcloud, pick_ticket: UphancePickTicket, trigger: int) -> None:
+def try_create_or_update_pick_ticket(
+    sendcloud_client: Sendcloud, pick_ticket: UphancePickTicket, trigger: int
+) -> None:
     pick_ticket_in_database = get_or_create_pick_ticket_in_database(pick_ticket)
 
     if pick_ticket_in_database.sendcloud_id is None:

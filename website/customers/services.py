@@ -18,7 +18,13 @@ def convert_address_information(address: UphanceCustomerAddress) -> Optional[dic
     try:
         snelstart_country = CachedLand.objects.get(landcode=address.country)
     except CachedLand.DoesNotExist:
-        return None
+        # As a backup, try to match the custom country code.
+        try:
+            snelstart_country = CachedLand.objects.get(uphance_country_code=address.country)
+        except CachedLand.DoesNotExist:
+            return None
+        except CachedLand.MultipleObjectsReturned:
+            return None
     except CachedLand.MultipleObjectsReturned:
         return None
 

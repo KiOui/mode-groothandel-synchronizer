@@ -6,7 +6,12 @@ from rest_framework.views import APIView
 from credit_notes.services import try_create_credit_note, try_delete_credit_note, try_update_credit_note
 from invoices.services import try_create_invoice, try_delete_invoice, try_update_invoice
 from mutations.models import Mutation
-from pick_tickets.services import try_create_pick_ticket, try_delete_pick_ticket, try_update_pick_ticket, try_create_or_update_pick_ticket
+from pick_tickets.services import (
+    try_create_pick_ticket,
+    try_delete_pick_ticket,
+    try_update_pick_ticket,
+    try_create_or_update_pick_ticket,
+)
 from sendcloud.client.sendcloud import Sendcloud
 from snelstart.clients.snelstart import Snelstart
 from uphance.clients.models.invoice import Invoice as UphanceInvoice

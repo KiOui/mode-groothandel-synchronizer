@@ -1,7 +1,10 @@
 from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
+from import_export.admin import ExportMixin
+from rangefilter.filters import DateRangeFilter
 
 from mutations.models import Mutation
+from mutations.resources import MutationResource
 
 
 class MutationInline(GenericTabularInline):
@@ -39,8 +42,10 @@ class MutationInline(GenericTabularInline):
 
 
 @admin.register(Mutation)
-class MutationsAdmin(admin.ModelAdmin):
+class MutationsAdmin(ExportMixin, admin.ModelAdmin):
     """Mutations Admin."""
+
+    resource_class = MutationResource
 
     search_fields = ["on"]
 
@@ -48,6 +53,7 @@ class MutationsAdmin(admin.ModelAdmin):
         "success",
         "method",
         "content_type",
+        ("created", DateRangeFilter),
     ]
 
     list_display = [
