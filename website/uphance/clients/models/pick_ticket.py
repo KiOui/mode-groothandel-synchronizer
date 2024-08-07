@@ -147,7 +147,7 @@ class PickTicket:
             grand_total=float(get_value_or_default(data, "grand_total", 0)),
             total_quantity=int(get_value_or_default(data, "total_quantity", 0)),
             currency=get_value_or_none(data, "currency", str),
-            order_number=int(get_value_or_error(data, "order_number")),
+            order_number=get_value_or_none(data, "order_number", int),
             order_id=int(get_value_or_error(data, "order_id")),
             order_source=str(get_value_or_error(data, "order_source")),
             warehouse=str(get_value_or_error(data, "warehouse")),

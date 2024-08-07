@@ -114,12 +114,17 @@ def setup_pick_ticket_for_synchronisation(
     if weight < 0.001:
         weight = 0.001
 
+    # Grab only the digits from the phone number.
+    phone_number = re.sub(r'\D', '', pick_ticket.contact_phone)
+
     return {
         "parcel": {
             "name": pick_ticket.contact_name if pick_ticket.contact_name else pick_ticket.customer_name,
-            "company_name": pick_ticket.customer_name,
+            # company_name can be a maximum of 50 characters.
+            "company_name": pick_ticket.customer_name[:50],
             "email": pick_ticket.contact_email,
-            "telephone": pick_ticket.contact_phone,
+            # telephone can be a maximum of 20 characters.
+            "telephone": phone_number if len(phone_number) <= 20 else None,
             "address": address_1,
             "address_2": address_2,
             "order_number": pick_ticket.order_number,
