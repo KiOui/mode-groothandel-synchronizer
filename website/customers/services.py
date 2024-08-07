@@ -110,10 +110,10 @@ def match_or_create_snelstart_relatie_with_name(
                 trigger=trigger,
                 on=customer_in_database,
                 success=False,
-                message=f"An error occurred while updating relation {customer_in_database.snelstart_id} in Snelstart: {e}",
+                message=f"An error occurred while updating relation {customer_in_database.snelstart_id} ({customer_in_database.uphance_name}) in Snelstart: {e}",
             )
             raise SynchronizationError(
-                f"An error occurred while updating relation {customer_in_database.snelstart_id} in Snelstart: {e}"
+                f"An error occurred while updating relation {customer_in_database.snelstart_id} ({customer_in_database.uphance_name}) in Snelstart: {e}"
             )
 
         customer_in_database.snelstart_name = converted_name
@@ -187,7 +187,7 @@ def match_or_create_snelstart_relatie_with_name(
             trigger=trigger,
             on=customer_in_database,
             success=True,
-            message=f"Created a new customer in Snelstart.",
+            message=f"Created a new customer ({customer_in_database.snelstart_name}) in Snelstart.",
         )
 
         return relatie
