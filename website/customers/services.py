@@ -149,6 +149,19 @@ def match_or_create_snelstart_relatie_with_name(
         raise SynchronizationError(f"Multiple relaties found in snelstart for relatie {converted_name}")
     elif len(relaties) == 1:
         relatie = relaties[0]
+
+        if Customer.objects.filter(snelstart_id=relatie.id).exists():
+            Mutation.objects.create(
+                method=Mutation.METHOD_CREATE,
+                trigger=trigger,
+                on=customer_in_database,
+                success=False,
+                message=f"Matched customer in Uphance {customer.id} ({customer.name}) with already matched customer in database {relatie.id} ({relatie.naam}).",
+            )
+            raise SynchronizationError(
+                f"Matched customer in Uphance {customer.id} ({customer.name}) with already matched customer in database {relatie.id} ({relatie.naam})."
+            )
+
         customer_in_database.snelstart_id = relatie.id
         customer_in_database.snelstart_name = relatie.naam
         customer_in_database.save()
