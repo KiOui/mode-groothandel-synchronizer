@@ -57,6 +57,7 @@ class MutationsAdmin(ExportMixin, admin.ModelAdmin):
     ]
 
     list_display = [
+        "created",
         "on",
         "method",
         "content_type",
