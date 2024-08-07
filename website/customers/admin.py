@@ -1,8 +1,10 @@
 from django.contrib import admin
 
+from customers.models import Customer
 from mutations.admin import MutationInline
 
 
+@admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):
     """Customer Admin."""
 
