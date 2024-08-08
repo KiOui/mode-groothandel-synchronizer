@@ -42,9 +42,14 @@ def retrieve_address_info_from_uphance_customer(customer: UphanceCustomer) -> Op
     if customer.addresses is None:
         return None
 
+    # Return the first shipping address.
     for address in customer.addresses:
         if address.default_for_shipping:
             return address
+
+    # If no shipping address, return the first address.
+    if len(customer.addresses) > 0:
+        return customer.addresses[0]
 
     return None
 
@@ -61,6 +66,7 @@ def retrieve_contact_from_uphance_customer(customer: UphanceCustomer) -> Optiona
 def convert_uphance_customer_to_relatie(customer: UphanceCustomer) -> Dict[str, Any]:
     """Convert an Uphance Customer to a Snelstart Relatie."""
     address = retrieve_address_info_from_uphance_customer(customer)
+    print(address)
     if address is not None:
         address = convert_address_information(address)
 

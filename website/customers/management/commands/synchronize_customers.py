@@ -1,9 +1,11 @@
 import logging
+from typing import Optional
 
 from django.conf import settings
 from django.core.management import BaseCommand
 
-from customers.services import match_or_create_snelstart_relatie_with_name
+from customers.services import match_or_create_snelstart_relatie_with_name, convert_uphance_customer_to_relatie
+from mode_groothandel.clients.api import ApiException
 from mode_groothandel.exceptions import SynchronizationError
 from mutations.models import Mutation
 from snelstart.clients.snelstart import Snelstart
@@ -15,6 +17,10 @@ logger = logging.getLogger(__name__)
 class Command(BaseCommand):
     """Synchronize customers to Snelstart."""
 
+    def add_arguments(self, parser):
+        """Add command line arguments."""
+        parser.add_argument("--customer", type=int, required=False)
+
     def handle(self, *args, **options):
         """Execute the command."""
         uphance_client = Uphance.get_client()
@@ -24,23 +30,34 @@ class Command(BaseCommand):
 
         snelstart_client = Snelstart.get_client()
 
-        next_page = 1
+        if options["customer"] is not None:
+            try:
+                customer = uphance_client.customer_by_id(options["customer"])
+            except ApiException as err:
+                print(f"Failed to retrieve customer: {err}")
+                return
+            print(customer.__dict__)
+            customer_converted_to_snelstart_relatie = convert_uphance_customer_to_relatie(customer)
+            print(customer_converted_to_snelstart_relatie)
+        else:
 
-        counter_processed = 0
-        counter_errors = 0
+            next_page = 1
 
-        while next_page is not None:
-            customers = uphance_client.customers(page=next_page)
-            for customer in customers.objects:
-                try:
-                    match_or_create_snelstart_relatie_with_name(snelstart_client, customer, Mutation.TRIGGER_MANUAL)
-                except SynchronizationError as e:
-                    counter_errors += 1
-                    print(e)
-                counter_processed += 1
+            counter_processed = 0
+            counter_errors = 0
 
-            next_page = customers.meta.next_page
+            while next_page is not None:
+                customers = uphance_client.customers(page=next_page)
+                for customer in customers.objects:
+                    try:
+                        match_or_create_snelstart_relatie_with_name(snelstart_client, customer, Mutation.TRIGGER_MANUAL)
+                    except SynchronizationError as e:
+                        counter_errors += 1
+                        print(e)
+                    counter_processed += 1
 
-        counter_success = counter_processed - counter_errors
+                next_page = customers.meta.next_page
 
-        print(f"Synchronized {counter_success} out of {counter_processed} customers ({counter_errors} errors)")
+            counter_success = counter_processed - counter_errors
+
+            print(f"Synchronized {counter_success} out of {counter_processed} customers ({counter_errors} errors)")
