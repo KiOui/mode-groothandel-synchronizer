@@ -8,6 +8,7 @@ from mode_groothandel.exceptions import SynchronizationError
 from customers.services import match_or_create_snelstart_relatie_with_name
 from mutations.models import Mutation
 from snelstart.clients.snelstart import Snelstart
+from snelstart.constants import BTW_VERKOPEN_PREFIX
 from snelstart.models import TaxMapping
 from uphance.clients.models.invoice import Invoice as UphanceInvoice
 from uphance.clients.uphance import Uphance
@@ -71,7 +72,7 @@ def construct_order_and_tax_line_items(
             tax_lines[tax_mapping.name] = invoice.shipping_tax
 
     tax_lines = [
-        {"btwSoort": tax_name, "btwBedrag": "{:.2f}".format(tax_amount)}
+        {"btwSoort": BTW_VERKOPEN_PREFIX + tax_name, "btwBedrag": "{:.2f}".format(tax_amount)}
         for (tax_name, tax_amount) in tax_lines.items()
         if tax_amount > 0
     ]

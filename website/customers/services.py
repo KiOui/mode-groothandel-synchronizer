@@ -66,7 +66,6 @@ def retrieve_contact_from_uphance_customer(customer: UphanceCustomer) -> Optiona
 def convert_uphance_customer_to_relatie(customer: UphanceCustomer) -> Dict[str, Any]:
     """Convert an Uphance Customer to a Snelstart Relatie."""
     address = retrieve_address_info_from_uphance_customer(customer)
-    print(address)
     if address is not None:
         address = convert_address_information(address)
 

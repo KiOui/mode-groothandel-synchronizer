@@ -1,0 +1,2 @@
+BTW_VERKOPEN_PREFIX = "Verkopen"
+BTW_INKOPEN_PREFIX = "Inkopen"

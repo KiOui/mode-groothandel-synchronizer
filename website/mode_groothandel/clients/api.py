@@ -147,7 +147,7 @@ class ApiClient(abc.ABC):
             try:
                 json_response = response.json()
                 error = json_response.get("error", {})
-                msg = error.get("message")
+                msg = response.text
                 reason = error.get("reason")
             except ValueError:
                 msg = response.text or None
