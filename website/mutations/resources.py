@@ -14,7 +14,6 @@ class MutationResource(resources.ModelResource):
     def __init__(self, **kwargs):
         """Initialize by creating a field for each content type that is supported."""
         super(MutationResource, self).__init__(**kwargs)
-        self.added_content_type_fields = dict()
         self.customer_type = ContentType.objects.get(app_label="customers", model="customer")
         self._invoice_type = ContentType.objects.get(app_label="invoices", model="invoice")
         self._credit_note_type = ContentType.objects.get(app_label="credit_notes", model="creditnote")
@@ -47,7 +46,7 @@ class MutationResource(resources.ModelResource):
         return None
 
     def export_field(self, field, obj):
-        """Check for added product field before exporting."""
+        """Check for added extra fields before exporting."""
         if field.attribute in [
             self.ATTRIBUTE_CUSTOMER_NAME,
             self.ATTRIBUTE_CUSTOMER_UPHANCE_ID,
