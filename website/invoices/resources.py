@@ -54,7 +54,7 @@ class InvoiceResource(resources.ModelResource):
             self.ATTRIBUTE_MUTATION_TRIGGER,
             self.ATTRIBUTE_MUTATION_MESSAGE,
             self.ATTRIBUTE_MUTATION_SUCCESS,
-            self.ATTRIBUTE_MUTATION_METHOD
+            self.ATTRIBUTE_MUTATION_METHOD,
         ]:
             return self.export_mutation_field(field, obj)
         else:

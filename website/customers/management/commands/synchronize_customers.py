@@ -50,7 +50,9 @@ class Command(BaseCommand):
                 customers = uphance_client.customers(page=next_page)
                 for customer in customers.objects:
                     try:
-                        match_or_create_snelstart_relatie_with_name(snelstart_client, customer, Mutation.TRIGGER_MANUAL)
+                        match_or_create_snelstart_relatie_with_name(
+                            snelstart_client, customer, Mutation.TRIGGER_MANUAL
+                        )
                     except SynchronizationError as e:
                         counter_errors += 1
                         print(e)
