@@ -88,15 +88,16 @@ def setup_pick_ticket_for_synchronisation(
     pick_ticket: UphancePickTicket, shipping_method: SendcloudShippingMethod
 ) -> dict:
     """Setup a pick ticket from Uphance for synchronisation to Sendcloud."""
-    address_1 = pick_ticket.address.line_1
-    if pick_ticket.address.line_2 != "" and pick_ticket.address.line_3 != "":
-        address_2 = f"{pick_ticket.address.line_2} - {pick_ticket.address.line_3}"
-    elif pick_ticket.address.line_2 != "":
-        address_2 = pick_ticket.address.line_2
-    elif pick_ticket.address.line_3 != "":
-        address_2 = pick_ticket.address.line_3
-    else:
-        address_2 = ""
+    address_lines = [pick_ticket.address.line_1, pick_ticket.address.line_2, pick_ticket.address.line_3]
+    # Remove empty lines
+    address_lines = list(filter(None, address_lines))
+    if len(address_lines) == 0:
+        raise SynchronizationError(f"All address lines for pick ticket {pick_ticket.id} are empty.")
+
+    # Retrieve the first set address line.
+    address_1 = address_lines.pop(0)
+    # Join the rest of the lines with '-' and add to address.
+    address_2 = " - ".join(address_lines) if len(address_lines) > 0 else ""
 
     dimensions = convert_dimensions(pick_ticket.dimensions) if pick_ticket.dimensions is not None else None
 

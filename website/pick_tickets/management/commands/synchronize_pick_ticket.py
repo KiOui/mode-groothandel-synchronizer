@@ -5,13 +5,11 @@ from typing import Optional
 from django.conf import settings
 from django.core.management import BaseCommand
 
-from invoices.services import try_create_invoice
 from mode_groothandel.clients.api import ApiException
 from mode_groothandel.exceptions import SynchronizationError
 from mutations.models import Mutation
 from pick_tickets.services import try_create_pick_ticket
 from sendcloud.client.sendcloud import Sendcloud
-from snelstart.clients.snelstart import Snelstart
 from uphance.clients.uphance import Uphance
 
 logger = logging.getLogger(__name__)

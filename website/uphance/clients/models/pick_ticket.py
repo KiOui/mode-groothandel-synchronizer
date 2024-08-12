@@ -35,7 +35,8 @@ class PickTicket:
         total_quantity: int,
         currency: Optional[str],
         order_number: int,
-        order_id: int,
+        # This is not set when a pick ticket is deleted.
+        order_id: Optional[int],
         order_source: str,
         warehouse: str,
         channel: str,
@@ -148,7 +149,7 @@ class PickTicket:
             total_quantity=int(get_value_or_default(data, "total_quantity", 0)),
             currency=get_value_or_none(data, "currency", str),
             order_number=get_value_or_none(data, "order_number", int),
-            order_id=int(get_value_or_error(data, "order_id")),
+            order_id=get_value_or_none(data, "order_id", int),
             order_source=str(get_value_or_error(data, "order_source")),
             warehouse=str(get_value_or_error(data, "warehouse")),
             channel=str(get_value_or_error(data, "channel")),
