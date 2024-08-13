@@ -127,15 +127,20 @@ def get_or_create_invoice_in_database(invoice: UphanceInvoice) -> Invoice:
         )
 
 
-def try_delete_invoice(snelstart_client: Snelstart, invoice: UphanceInvoice, trigger: int) -> None:
-    invoice_in_database = get_or_create_invoice_in_database(invoice)
+def try_delete_invoice(snelstart_client: Snelstart, invoice_id: int, trigger: int) -> None:
+    try:
+        invoice_in_database = Invoice.objects.get(uphance_id=invoice_id)
+    except Invoice.DoesNotExist:
+        invoice_in_database = Invoice.objects.create(
+            uphance_id=invoice_id,
+        )
     if invoice_in_database.snelstart_id is None:
         Mutation.objects.create(
             method=Mutation.METHOD_DELETE,
             trigger=trigger,
             on=invoice_in_database,
             success=False,
-            message=f"Unable to delete invoice {invoice.id} because no Snelstart ID was found in the database",
+            message=f"Unable to delete invoice {invoice_id} because no Snelstart ID was found in the database",
         )
 
     try:
@@ -153,7 +158,7 @@ def try_delete_invoice(snelstart_client: Snelstart, invoice: UphanceInvoice, tri
             trigger=trigger,
             on=invoice_in_database,
             success=False,
-            message=f"An API error occurred for invoice {invoice.id}: {e}",
+            message=f"An API error occurred for invoice {invoice_id}: {e}",
         )
 
 

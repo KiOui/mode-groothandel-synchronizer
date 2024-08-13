@@ -140,15 +140,20 @@ def get_or_create_credit_note_in_database(credit_note: UphanceCreditNote) -> Cre
         )
 
 
-def try_delete_credit_note(snelstart_client: Snelstart, credit_note: UphanceCreditNote, trigger: int) -> None:
-    credit_note_in_database = get_or_create_credit_note_in_database(credit_note)
+def try_delete_credit_note(snelstart_client: Snelstart, credit_note_id: int, trigger: int) -> None:
+    try:
+        credit_note_in_database = CreditNote.objects.get(uphance_id=credit_note_id)
+    except CreditNote.DoesNotExist:
+        credit_note_in_database = CreditNote.objects.create(
+            uphance_id=credit_note_id,
+        )
     if credit_note_in_database.snelstart_id is None:
         Mutation.objects.create(
             method=Mutation.METHOD_DELETE,
             trigger=trigger,
             on=credit_note_in_database,
             success=False,
-            message=f"Unable to delete credit note {credit_note.id} because no Snelstart ID was found in the database",
+            message=f"Unable to delete credit note {credit_note_id} because no Snelstart ID was found in the database",
         )
 
     try:
@@ -166,7 +171,7 @@ def try_delete_credit_note(snelstart_client: Snelstart, credit_note: UphanceCred
             trigger=trigger,
             on=credit_note_in_database,
             success=False,
-            message=f"An API error occurred for credit note {credit_note.id}: {e}",
+            message=f"An API error occurred for credit note {credit_note_id}: {e}",
         )
 
 

@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 
 from credit_notes.services import try_create_credit_note, try_delete_credit_note, try_update_credit_note
 from invoices.services import try_create_invoice, try_delete_invoice, try_update_invoice
+from mode_groothandel.clients.utils import get_value_or_error
 from mutations.models import Mutation
 from pick_tickets.services import (
     try_create_pick_ticket,
@@ -44,9 +45,9 @@ class InvoiceCreateUpdateDeleteApiView(APIView):
 
     def _delete_invoice(self, invoice: dict):
         """Delete an invoice from Snelstart."""
-        invoice = UphanceInvoice.from_data(invoice)
+        invoice_id = get_value_or_error(invoice, "id")
         snelstart_client = Snelstart.get_client()
-        try_delete_invoice(snelstart_client, invoice, Mutation.TRIGGER_WEBHOOK)
+        try_delete_invoice(snelstart_client, invoice_id, Mutation.TRIGGER_WEBHOOK)
 
     def _update_invoice(self, invoice: dict):
         """Update an invoice in Snelstart."""
@@ -101,9 +102,9 @@ class CreditNoteCreateUpdateDeleteApiView(APIView):
 
     def _delete_credit_note(self, credit_note: dict):
         """Delete a credit note from Snelstart."""
-        credit_note = UphanceCreditNote.from_data(credit_note)
+        credit_note_id = get_value_or_error(credit_note, "id")
         snelstart_client = Snelstart.get_client()
-        try_delete_credit_note(snelstart_client, credit_note, Mutation.TRIGGER_WEBHOOK)
+        try_delete_credit_note(snelstart_client, credit_note_id, Mutation.TRIGGER_WEBHOOK)
 
     def _update_credit_note(self, credit_note: dict):
         """Update a credit note in Snelstart."""
@@ -157,9 +158,9 @@ class PickTicketCreateUpdateDeleteApiView(APIView):
 
     def _delete_pick_ticket(self, pick_ticket: dict):
         """Delete a pick ticket from Sendcloud."""
-        pick_ticket = UphancePickTicket.from_data(pick_ticket)
+        pick_ticket_id = get_value_or_error(pick_ticket, "id")
         sendcloud_client = Sendcloud.get_client()
-        try_delete_pick_ticket(sendcloud_client, pick_ticket, Mutation.TRIGGER_WEBHOOK)
+        try_delete_pick_ticket(sendcloud_client, pick_ticket_id, Mutation.TRIGGER_WEBHOOK)
 
     def _create_or_update_pick_ticket(self, pick_ticket: dict):
         """Create or update a pick ticket in Sendcloud."""

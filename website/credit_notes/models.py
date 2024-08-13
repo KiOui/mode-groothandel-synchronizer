@@ -6,8 +6,8 @@ class CreditNote(models.Model):
 
     uphance_id = models.IntegerField(unique=True)
     snelstart_id = models.CharField(max_length=100, unique=True, null=True, blank=True)
-    credit_note_number = models.CharField(max_length=100)
-    credit_note_total = models.DecimalField(decimal_places=2, max_digits=10)
+    credit_note_number = models.CharField(max_length=100, null=True, blank=True)
+    credit_note_total = models.DecimalField(decimal_places=2, max_digits=10, null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 

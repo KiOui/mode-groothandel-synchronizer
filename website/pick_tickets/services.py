@@ -169,15 +169,21 @@ def get_shipping_method(sendcloud_client: Sendcloud) -> SendcloudShippingMethod:
     )
 
 
-def try_delete_pick_ticket(sendcloud_client: Sendcloud, pick_ticket: UphancePickTicket, trigger: int) -> None:
-    pick_ticket_in_database = get_or_create_pick_ticket_in_database(pick_ticket)
+def try_delete_pick_ticket(sendcloud_client: Sendcloud, pick_ticket_id: int, trigger: int) -> None:
+    try:
+        pick_ticket_in_database = PickTicket.objects.get(uphance_id=pick_ticket_id)
+    except PickTicket.DoesNotExist:
+        pick_ticket_in_database = PickTicket.objects.create(
+            uphance_id=pick_ticket_id,
+        )
+
     if pick_ticket_in_database.sendcloud_id is None:
         Mutation.objects.create(
             method=Mutation.METHOD_DELETE,
             trigger=trigger,
             on=pick_ticket_in_database,
             success=False,
-            message=f"Unable to delete pick ticket {pick_ticket.id} because no Sendcloud ID was found in the database",
+            message=f"Unable to delete pick ticket {pick_ticket_id} because no Sendcloud ID was found in the database",
         )
 
     try:
@@ -195,7 +201,7 @@ def try_delete_pick_ticket(sendcloud_client: Sendcloud, pick_ticket: UphancePick
             trigger=trigger,
             on=pick_ticket_in_database,
             success=False,
-            message=f"An API error occurred while deleting pick ticket {pick_ticket.id}: {e}",
+            message=f"An API error occurred while deleting pick ticket {pick_ticket_id}: {e}",
         )
 
 
