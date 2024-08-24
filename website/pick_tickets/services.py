@@ -17,15 +17,15 @@ logger = logging.getLogger(__name__)
 
 
 def get_or_create_pick_ticket_in_database(pick_ticket: UphancePickTicket) -> PickTicket:
-    try:
-        return PickTicket.objects.get(uphance_id=pick_ticket.id)
-    except PickTicket.DoesNotExist:
-        return PickTicket.objects.create(
-            uphance_id=pick_ticket.id,
-            shipment_number=pick_ticket.shipment_number,
-            order_id=pick_ticket.order_id,
-            sale_id=pick_ticket.sale_id,
-        )
+    pick_ticket, created = PickTicket.objects.get_or_create(uphance_id=pick_ticket.id)
+
+    if created:
+        pick_ticket.shipment_number = pick_ticket.shipment_number
+        pick_ticket.order_id = pick_ticket.order_id
+        pick_ticket.sale_id = pick_ticket.sale_id
+        pick_ticket.save()
+
+    return pick_ticket
 
 
 def sendcloud_requires_state(iso3166_1_land_code: str) -> bool:
