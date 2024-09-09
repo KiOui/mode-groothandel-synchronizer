@@ -36,9 +36,10 @@ class Command(BaseCommand):
             except ApiException as err:
                 print(f"Failed to retrieve customer: {err}")
                 return
-            print(customer.__dict__)
-            customer_converted_to_snelstart_relatie = convert_uphance_customer_to_relatie(customer)
-            print(customer_converted_to_snelstart_relatie)
+            match_or_create_snelstart_relatie_with_name(
+                snelstart_client, customer, Mutation.TRIGGER_MANUAL
+            )
+            return
         else:
 
             next_page = 1

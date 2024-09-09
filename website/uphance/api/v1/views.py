@@ -168,12 +168,6 @@ class PickTicketCreateUpdateDeleteApiView(APIView):
         sendcloud_client = Sendcloud.get_client()
         try_create_or_update_pick_ticket(sendcloud_client, pick_ticket, Mutation.TRIGGER_WEBHOOK)
 
-    def _update_pick_ticket(self, pick_ticket: dict):
-        """Update a pick ticket in Sendcloud."""
-        pick_ticket = UphancePickTicket.from_data(pick_ticket)
-        sendcloud_client = Sendcloud.get_client()
-        try_update_pick_ticket(sendcloud_client, pick_ticket, Mutation.TRIGGER_WEBHOOK)
-
     def post(self, request):
         """Handle a request from Uphance."""
         event = request.data.get("event", None)

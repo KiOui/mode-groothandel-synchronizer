@@ -192,7 +192,6 @@ class ApiClient(abc.ABC):
         for query_key, query_value in query:
             if query_value is not None:
                 safe_filtered_query.append((quote_plus(query_key), quote_plus(query_value)))
-                # safe_filtered_query.append((quote_plus(query_key), quote_plus(query_value)))
         return ApiClient._create_querystring(safe_filtered_query)
 
     @staticmethod

@@ -11,7 +11,7 @@ from pick_tickets.models import PickTicket
 from sendcloud.client.sendcloud import Sendcloud
 from sendcloud.client.models.shipping_method import ShippingMethod as SendcloudShippingMethod
 from uphance.clients.models.pick_ticket import PickTicket as UphancePickTicket
-
+from uphance.constants import PICK_TICkET_STATUS_SHIPPED
 
 logger = logging.getLogger(__name__)
 
@@ -254,6 +254,16 @@ def try_update_pick_ticket(sendcloud_client: Sendcloud, pick_ticket: UphancePick
 
 def try_create_pick_ticket(sendcloud_client: Sendcloud, pick_ticket: UphancePickTicket, trigger: int) -> None:
     pick_ticket_in_database = get_or_create_pick_ticket_in_database(pick_ticket)
+
+    if pick_ticket.status != PICK_TICkET_STATUS_SHIPPED:
+        Mutation.objects.create(
+            method=Mutation.METHOD_CREATE,
+            trigger=trigger,
+            on=pick_ticket_in_database,
+            success=False,
+            message=f"Ignored creation of pick ticket because status is {pick_ticket.status}",
+        )
+        return
 
     try:
         shipping_method = get_shipping_method(sendcloud_client)

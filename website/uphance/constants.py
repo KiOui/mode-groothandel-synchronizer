@@ -1,0 +1,3 @@
+
+
+PICK_TICkET_STATUS_SHIPPED = "shipped"
