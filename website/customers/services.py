@@ -55,10 +55,18 @@ def retrieve_address_info_from_uphance_customer(customer: UphanceCustomer) -> Op
 
 
 def retrieve_contact_from_uphance_customer(customer: UphanceCustomer) -> Optional[UphancePerson]:
-    """Retrieve the first billing contact from an Uphance customer."""
+    """
+    Retrieve the first best suiting contact from an Uphance customer.
+
+    This function will retrieve the first billing customer if it exists, else it will retrieve the first contact in
+    the list.
+    """
     for person in customer.people:
         if person.billing:
             return person
+
+    if len(customer.people) > 0:
+        return customer.people[0]
 
     return None
 
