@@ -36,9 +36,7 @@ class Command(BaseCommand):
             except ApiException as err:
                 print(f"Failed to retrieve customer: {err}")
                 return
-            match_or_create_snelstart_relatie_with_name(
-                snelstart_client, customer, Mutation.TRIGGER_MANUAL
-            )
+            match_or_create_snelstart_relatie_with_name(snelstart_client, customer, Mutation.TRIGGER_MANUAL)
             return
         else:
 
