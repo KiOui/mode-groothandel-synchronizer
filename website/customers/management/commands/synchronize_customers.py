@@ -1,4 +1,5 @@
 import logging
+from time import sleep
 from typing import Optional
 
 from django.conf import settings
@@ -20,6 +21,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         """Add command line arguments."""
         parser.add_argument("--customer", type=int, required=False)
+        parser.add_argument("--timeout", type=int, required=False)
 
     def handle(self, *args, **options):
         """Execute the command."""
@@ -39,7 +41,6 @@ class Command(BaseCommand):
             match_or_create_snelstart_relatie_with_name(snelstart_client, customer, Mutation.TRIGGER_MANUAL)
             return
         else:
-
             next_page = 1
 
             counter_processed = 0
@@ -58,6 +59,9 @@ class Command(BaseCommand):
                     counter_processed += 1
 
                 next_page = customers.meta.next_page
+                if next_page is not None and options["timeout"] is not None:
+                    print("Sleeping {} seconds.".format(options["timeout"]))
+                    sleep(options["timeout"])
 
             counter_success = counter_processed - counter_errors
 
