@@ -185,6 +185,7 @@ def try_update_invoice(
 
     try:
         invoice_converted = setup_invoice_for_synchronisation(uphance_client, snelstart_client, invoice, trigger)
+        invoice_converted["id"] = invoice_in_database.snelstart_id
         try:
             snelstart_client.update_verkoopboeking(invoice_in_database.snelstart_id, invoice_converted)
         except ApiException as e:
