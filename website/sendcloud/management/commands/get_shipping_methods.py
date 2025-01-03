@@ -1,12 +1,9 @@
 import logging
 
-from django.conf import settings
 from django.core.management import BaseCommand
 
 from mode_groothandel.clients.api import ApiException
 from sendcloud.client.sendcloud import Sendcloud
-from snelstart.clients.snelstart import Snelstart
-from uphance.clients.uphance import Uphance
 
 logger = logging.getLogger(__name__)
 

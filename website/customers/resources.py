@@ -21,16 +21,16 @@ class CustomerResource(resources.ModelResource):
     def before_export(self, queryset, *args, **kwargs):
         """Add the fields for the last mutation."""
         self.fields[self.ATTRIBUTE_MUTATION_METHOD] = Field(
-            column_name=f"Mutation method", attribute=self.ATTRIBUTE_MUTATION_METHOD, readonly=True
+            column_name="Mutation method", attribute=self.ATTRIBUTE_MUTATION_METHOD, readonly=True
         )
         self.fields[self.ATTRIBUTE_MUTATION_TRIGGER] = Field(
-            column_name=f"Mutation trigger", attribute=self.ATTRIBUTE_MUTATION_TRIGGER, readonly=True
+            column_name="Mutation trigger", attribute=self.ATTRIBUTE_MUTATION_TRIGGER, readonly=True
         )
         self.fields[self.ATTRIBUTE_MUTATION_SUCCESS] = Field(
-            column_name=f"Mutation success", attribute=self.ATTRIBUTE_MUTATION_SUCCESS, readonly=True
+            column_name="Mutation success", attribute=self.ATTRIBUTE_MUTATION_SUCCESS, readonly=True
         )
         self.fields[self.ATTRIBUTE_MUTATION_MESSAGE] = Field(
-            column_name=f"Mutation message", attribute=self.ATTRIBUTE_MUTATION_MESSAGE, readonly=True
+            column_name="Mutation message", attribute=self.ATTRIBUTE_MUTATION_MESSAGE, readonly=True
         )
 
     def export_mutation_field(self, field, obj):

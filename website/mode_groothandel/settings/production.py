@@ -1,3 +1,5 @@
+# flake8: noqa
+
 from .base import *
 
 import sentry_sdk

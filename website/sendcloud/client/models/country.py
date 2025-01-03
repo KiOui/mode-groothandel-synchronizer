@@ -1,5 +1,3 @@
-from typing import List
-
 from mode_groothandel.clients.utils import get_value_or_error
 
 

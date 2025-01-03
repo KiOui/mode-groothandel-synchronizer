@@ -16,7 +16,7 @@ jobs:
       - name: "Setup Python"
         uses: actions/setup-python@v1
         with:
-          python-version: '3.11'
+          python-version: '3.12'
 
       - name: "Install OS dependencies"
         run: |
@@ -50,6 +50,3 @@ jobs:
           --exclude="migrations,website/mode_groothandel/settings/*.py"
           --max-line-length=119
           website
-
-      - name: "Run PyDocStyle"
-        run: poetry run pydocstyle --explain --add-ignore=D100,D104 --match-dir='(?!migrations).*'

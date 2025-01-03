@@ -1,3 +1,5 @@
+# flake8: noqa
+
 from .base import *
 
 SECRET_KEY = "django-insecure-7c^z*je^r!@aw!0*vuc1t4cp1rfi+4+xu@x5pva@xc@rf%3#lt"

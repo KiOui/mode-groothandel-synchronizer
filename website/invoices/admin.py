@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Subquery, Max, Min, OuterRef, Exists, Window
+from django.db.models import Subquery, OuterRef, Exists
 from import_export.admin import ExportMixin
 from rangefilter.filters import DateRangeFilter
 

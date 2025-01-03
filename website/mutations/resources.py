@@ -24,13 +24,13 @@ class MutationResource(resources.ModelResource):
         for obj in queryset:
             if obj.content_type == self.customer_type:
                 self.fields[self.ATTRIBUTE_CUSTOMER_NAME] = Field(
-                    column_name=f"Customer name", attribute=self.ATTRIBUTE_CUSTOMER_NAME, readonly=True
+                    column_name="Customer name", attribute=self.ATTRIBUTE_CUSTOMER_NAME, readonly=True
                 )
                 self.fields[self.ATTRIBUTE_CUSTOMER_UPHANCE_ID] = Field(
-                    column_name=f"Customer Uphance ID", attribute=self.ATTRIBUTE_CUSTOMER_UPHANCE_ID, readonly=True
+                    column_name="Customer Uphance ID", attribute=self.ATTRIBUTE_CUSTOMER_UPHANCE_ID, readonly=True
                 )
                 self.fields[self.ATTRIBUTE_CUSTOMER_SNELSTART_ID] = Field(
-                    column_name=f"Customer Snelstart ID", attribute=self.ATTRIBUTE_CUSTOMER_SNELSTART_ID, readonly=True
+                    column_name="Customer Snelstart ID", attribute=self.ATTRIBUTE_CUSTOMER_SNELSTART_ID, readonly=True
                 )
 
     def export_customer_field(self, field, obj):

@@ -57,7 +57,8 @@ def construct_order_and_tax_line_items(
             tax_mapping = TaxMapping.objects.get(tax_amount=float(computed_tax_level_2_decimals))
         except TaxMapping.DoesNotExist:
             raise SynchronizationError(
-                f"Error finding tax mapping for freeform amount: Tax mapping for computed tax amount {computed_tax_level_2_decimals} does not exist"
+                f"Error finding tax mapping for freeform amount: Tax mapping for computed tax amount "
+                f"{computed_tax_level_2_decimals} does not exist"
             )
 
         to_order.append(
@@ -113,7 +114,8 @@ def setup_credit_note_for_synchronisation(
 
     if snelstart_relatie_for_order is None:
         raise SynchronizationError(
-            f"Failed to synchronize credit note {credit_note.credit_note_number} because customer {customer.name} could not be found or created in Snelstart."
+            f"Failed to synchronize credit note {credit_note.credit_note_number} because customer {customer.name} "
+            f"could not be found or created in Snelstart."
         )
 
     credit_note_grand_total = credit_note.grand_total * -1
@@ -202,7 +204,8 @@ def try_update_credit_note(
             snelstart_client.update_verkoopboeking(credit_note_in_database.snelstart_id, credit_note_converted)
         except ApiException as e:
             raise SynchronizationError(
-                f"An error occurred while updating verkoopboeking {credit_note_in_database.snelstart_id} for credit note {credit_note.id} in Snelstart: {e}"
+                f"An error occurred while updating verkoopboeking {credit_note_in_database.snelstart_id} for credit "
+                f"note {credit_note.id} in Snelstart: {e}"
             )
         logger.info(f"Successfully updated credit note {credit_note.id}")
         Mutation.objects.create(
@@ -236,7 +239,8 @@ def try_create_credit_note(
             verkoopboeking = snelstart_client.add_verkoopboeking(credit_note_converted)
         except ApiException as e:
             raise SynchronizationError(
-                f"An error occurred while adding a verkoopboeking for credit note {credit_note.credit_note_number} to Snelstart: {e}"
+                f"An error occurred while adding a verkoopboeking for credit note {credit_note.credit_note_number} to "
+                f"Snelstart: {e}"
             )
 
         logger.info(f"Successfully synchronized credit note {credit_note.id}")

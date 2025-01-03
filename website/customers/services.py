@@ -130,10 +130,12 @@ def match_or_create_snelstart_relatie_with_name(
                 trigger=trigger,
                 on=customer_in_database,
                 success=False,
-                message=f"An error occurred while updating relation {customer_in_database.snelstart_id} ({customer_in_database.uphance_name}) in Snelstart: {e}",
+                message=f"An error occurred while updating relation {customer_in_database.snelstart_id} "
+                f"({customer_in_database.uphance_name}) in Snelstart: {e}",
             )
             raise SynchronizationError(
-                f"An error occurred while updating relation {customer_in_database.snelstart_id} ({customer_in_database.uphance_name}) in Snelstart: {e}"
+                f"An error occurred while updating relation {customer_in_database.snelstart_id} "
+                f"({customer_in_database.uphance_name}) in Snelstart: {e}"
             )
 
         customer_in_database.snelstart_name = converted_name
@@ -176,10 +178,12 @@ def match_or_create_snelstart_relatie_with_name(
                 trigger=trigger,
                 on=customer_in_database,
                 success=False,
-                message=f"Matched customer in Uphance {customer.id} ({customer.name}) with already matched customer in database {relatie.id} ({relatie.naam}).",
+                message=f"Matched customer in Uphance {customer.id} ({customer.name}) with already matched customer "
+                f"in database {relatie.id} ({relatie.naam}).",
             )
             raise SynchronizationError(
-                f"Matched customer in Uphance {customer.id} ({customer.name}) with already matched customer in database {relatie.id} ({relatie.naam})."
+                f"Matched customer in Uphance {customer.id} ({customer.name}) with already matched customer in "
+                f"database {relatie.id} ({relatie.naam})."
             )
 
         customer_in_database.snelstart_id = relatie.id
@@ -191,7 +195,7 @@ def match_or_create_snelstart_relatie_with_name(
             trigger=trigger,
             on=customer_in_database,
             success=True,
-            message=f"Matched customer in Uphance with already existing customer in Snelstart.",
+            message="Matched customer in Uphance with already existing customer in Snelstart.",
         )
 
         return relatie

@@ -1,7 +1,5 @@
 from django.db import models
 
-from mutations.models import Mutation
-
 
 class Invoice(models.Model):
     """Invoice model."""

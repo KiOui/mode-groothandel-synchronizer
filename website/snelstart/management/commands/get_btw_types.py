@@ -1,14 +1,11 @@
 import logging
 from functools import cmp_to_key
 
-from django.conf import settings
 from django.core.management import BaseCommand
 
 from mode_groothandel.clients.api import ApiException
-from snelstart.clients.models.btw_soort import BtwSoort
 from snelstart.clients.models.btw_tarief import BtwTarief
 from snelstart.clients.snelstart import Snelstart
-from uphance.clients.uphance import Uphance
 
 logger = logging.getLogger(__name__)
 

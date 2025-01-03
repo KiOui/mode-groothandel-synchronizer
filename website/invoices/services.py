@@ -98,7 +98,8 @@ def setup_invoice_for_synchronisation(
 
     if snelstart_relatie_for_order is None:
         raise SynchronizationError(
-            f"Failed to synchronize invoice {invoice.invoice_number} because customer {customer.name} could not be found or created in Snelstart."
+            f"Failed to synchronize invoice {invoice.invoice_number} because customer {customer.name} could not be "
+            f"found or created in Snelstart."
         )
 
     invoice_date = invoice.created_at if invoice.created_at is not None else datetime.now()
@@ -222,7 +223,8 @@ def try_create_invoice(
             verkoopboeking = snelstart_client.add_verkoopboeking(invoice_converted)
         except ApiException as e:
             raise SynchronizationError(
-                f"An error occurred while adding a verkoopboeking for invoice {invoice.invoice_number} to Snelstart: {e}"
+                f"An error occurred while adding a verkoopboeking for invoice {invoice.invoice_number} to Snelstart: "
+                f"{e}"
             )
         logger.info(f"Successfully synchronized invoice {invoice.id}")
         invoice_in_database.snelstart_id = verkoopboeking["id"]

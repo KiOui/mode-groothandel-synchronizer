@@ -1,11 +1,10 @@
 import logging
 from time import sleep
-from typing import Optional
 
 from django.conf import settings
 from django.core.management import BaseCommand
 
-from customers.services import match_or_create_snelstart_relatie_with_name, convert_uphance_customer_to_relatie
+from customers.services import match_or_create_snelstart_relatie_with_name
 from mode_groothandel.clients.api import ApiException
 from mode_groothandel.exceptions import SynchronizationError
 from mutations.models import Mutation

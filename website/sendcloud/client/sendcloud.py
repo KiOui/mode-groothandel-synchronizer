@@ -1,16 +1,11 @@
 import logging
-from typing import Optional, List, Any
+from typing import List, Any
 
 from django.conf import settings
 
 from mode_groothandel.clients.api import ApiClient
-from mode_groothandel.clients.cache.cache import CacheFileHandler
-from mode_groothandel.clients.utils import get_value_or_error, apply_from_data_or_error
 from sendcloud.client.authentication import SendcloudAuthClient
 from sendcloud.client.models.shipping_method import ShippingMethod
-from uphance.clients.models.api_page import ApiPage
-from uphance.clients.models.customer import Customer
-from uphance.clients.models.invoice import Invoice
 
 logger = logging.getLogger(__name__)
 

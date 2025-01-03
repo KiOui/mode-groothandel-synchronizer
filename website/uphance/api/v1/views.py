@@ -10,7 +10,6 @@ from mutations.models import Mutation
 from pick_tickets.services import (
     try_create_pick_ticket,
     try_delete_pick_ticket,
-    try_update_pick_ticket,
     try_create_or_update_pick_ticket,
 )
 from sendcloud.client.sendcloud import Sendcloud

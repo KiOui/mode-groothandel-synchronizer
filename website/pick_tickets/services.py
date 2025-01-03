@@ -165,7 +165,8 @@ def get_shipping_method(sendcloud_client: Sendcloud) -> SendcloudShippingMethod:
             return shipping_method
 
     raise SynchronizationError(
-        f"Shipping method '{selected_shipping_method_name}' could not be found in the shipping methods retrieved from Sendcloud"
+        f"Shipping method '{selected_shipping_method_name}' could not be found in the shipping methods retrieved from "
+        f"Sendcloud"
     )
 
 

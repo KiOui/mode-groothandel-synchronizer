@@ -1,5 +1,5 @@
 import logging
-from typing import Optional, List
+from typing import Optional
 
 from django.conf import settings
 
@@ -7,9 +7,7 @@ from mode_groothandel.clients.api import ApiClient
 from mode_groothandel.clients.cache.cache import CacheFileHandler
 from mode_groothandel.clients.utils import (
     get_value_or_error,
-    get_value_or_none,
     apply_from_data_or_error,
-    apply_from_data_to_list_or_error,
 )
 from uphance.clients.authentication import UphanceAuthClient
 from uphance.clients.models.api_page import ApiPage

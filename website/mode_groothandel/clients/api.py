@@ -72,7 +72,7 @@ class ApiClient(abc.ABC):
     @property
     def api_url(self):
         """Get API URL."""
-        raise NotImplemented
+        raise NotImplementedError
 
     @property
     def auth_manager(self):

@@ -1,6 +1,5 @@
 import base64
 import logging
-from typing import Optional
 
 from mode_groothandel.clients.authentication import AuthClient
 

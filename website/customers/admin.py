@@ -130,7 +130,7 @@ class CustomerAdmin(ExportMixin, admin.ModelAdmin):
                 match_or_create_snelstart_relatie_with_name(snelstart_client, customer, Mutation.TRIGGER_MANUAL)
                 self.message_user(
                     request,
-                    f"Successfully synchronized customer to Snelstart!",
+                    "Successfully synchronized customer to Snelstart!",
                     level=messages.SUCCESS,
                 )
             except SynchronizationError as e:
