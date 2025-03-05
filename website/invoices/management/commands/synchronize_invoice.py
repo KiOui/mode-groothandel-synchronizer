@@ -1,5 +1,6 @@
 import logging
 import re
+import time
 from typing import Optional
 
 from django.conf import settings
@@ -37,10 +38,14 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         """Add command line arguments."""
         parser.add_argument("invoices", type=str)
+        parser.add_argument("--sleep", type=int, default=None)
+        parser.add_argument("--sleep-every", type=int, default=None)
 
     def handle(self, *args, **options):
         """Execute the command."""
         invoices = self.parse_invoices_argument(options["invoices"])
+        sleep_seconds = options["sleep"]
+        sleep_every = options["sleep_every"]
         if invoices is None:
             return
 
@@ -50,7 +55,7 @@ class Command(BaseCommand):
             return
 
         snelstart_client = Snelstart.get_client()
-        for invoice_id in invoices:
+        for index, invoice_id in enumerate(invoices):
             try:
                 invoice = uphance_client.invoice(invoice_id)
                 if invoice is not None:
@@ -59,3 +64,10 @@ class Command(BaseCommand):
                     logger.warning(f"Invoice {invoice_id} was not found in Uphance!")
             except ApiException as e:
                 logger.error(f"An API exception occurred while synchronizing invoice {invoice_id}: {e}")
+            if sleep_seconds is not None:
+                if sleep_every is None:
+                    print(f"Sleeping for {sleep_seconds} seconds")
+                    time.sleep(sleep_seconds)
+                elif index != 0 and index % sleep_every == 0:
+                    print(f"Sleeping for {sleep_seconds} seconds")
+                    time.sleep(sleep_seconds)
