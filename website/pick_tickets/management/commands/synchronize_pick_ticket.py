@@ -1,5 +1,6 @@
 import logging
 import re
+import time
 from typing import Optional
 
 from django.conf import settings
@@ -38,10 +39,14 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         """Add command line arguments."""
         parser.add_argument("pick-tickets", type=str)
+        parser.add_argument("--sleep", type=int, default=None)
+        parser.add_argument("--sleep-every", type=int, default=None)
 
     def handle(self, *args, **options):
         """Execute the command."""
         pick_tickets = self.parse_pick_tickets_argument(options["pick-tickets"])
+        sleep_seconds = options["sleep"]
+        sleep_every = options["sleep_every"]
         if pick_tickets is None:
             return
 
@@ -51,7 +56,7 @@ class Command(BaseCommand):
             return
 
         sendlcloud_client = Sendcloud.get_client()
-        for pick_ticket_id in pick_tickets:
+        for index, pick_ticket_id in enumerate(pick_tickets):
             try:
                 pick_ticket = uphance_client.pick_ticket(pick_ticket_id)
                 try:
@@ -61,3 +66,10 @@ class Command(BaseCommand):
                     logger.error(e)
             except ApiException as e:
                 logger.error(f"An API exception occurred while synchronizing pick ticket {pick_ticket_id}: {e}")
+            if sleep_seconds is not None:
+                if sleep_every is None:
+                    print(f"Sleeping for {sleep_seconds} seconds")
+                    time.sleep(sleep_seconds)
+                elif index != 0 and index % sleep_every == 0:
+                    print(f"Sleeping for {sleep_seconds} seconds")
+                    time.sleep(sleep_seconds)
