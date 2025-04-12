@@ -42,3 +42,7 @@ class CachedLand(models.Model):
     landcode = models.CharField(max_length=100)
     snelstart_id = models.UUIDField(unique=True)
     uri = models.CharField(max_length=200)
+
+    def __str__(self):
+        """Convert this object to string."""
+        return self.naam
