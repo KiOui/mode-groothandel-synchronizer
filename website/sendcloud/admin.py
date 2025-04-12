@@ -1,3 +1,5 @@
+from autocompletefilter.admin import AutocompleteFilterMixin
+from autocompletefilter.filters import AutocompleteListFilter
 from django.contrib import admin
 from sendcloud.models import CachedCountry, CachedShippingMethod
 
@@ -9,7 +11,13 @@ class CachedCountryAdmin(admin.ModelAdmin):
 
 
 @admin.register(CachedShippingMethod)
-class CachedShippingMethodAdmin(admin.ModelAdmin):
-    list_filter = ("carrier",)
+class CachedShippingMethodAdmin(AutocompleteFilterMixin, admin.ModelAdmin):
+    list_filter = (
+        ("countries", AutocompleteListFilter),
+        "carrier",
+    )
     search_fields = ("sendcloud_id", "name", "carrier")
     list_display = ("sendcloud_id", "name", "carrier")
+
+    class Meta:
+        """Necessary for AutocompleteListFilter."""

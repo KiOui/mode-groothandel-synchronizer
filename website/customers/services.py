@@ -11,22 +11,23 @@ from uphance.clients.models.customer import Customer as UphanceCustomer
 from uphance.clients.models.person import Person as UphancePerson
 from snelstart.clients.snelstart import Snelstart
 from uphance.clients.models.customer_address import CustomerAddress as UphanceCustomerAddress
+from uphance.models import Country as UphanceCountry
 
 
 def convert_address_information(address: UphanceCustomerAddress) -> Optional[dict]:
     """Convert address information of an Uphance customer to address information for Snelstart."""
-    try:
-        snelstart_country = CachedLand.objects.get(landcode=address.country)
-    except CachedLand.DoesNotExist:
-        # As a backup, try to match the custom country code.
+    uphance_country, _ = UphanceCountry.objects.get_or_create(country_code=address.country)
+
+    if uphance_country.mapped_country_code_in_snelstart is not None:
+        # If a custom mapping exists.
+        snelstart_country = uphance_country.mapped_country_code_in_snelstart
+    else:
         try:
-            snelstart_country = CachedLand.objects.get(uphance_country_code=address.country)
+            snelstart_country = CachedLand.objects.get(landcode=address.country)
         except CachedLand.DoesNotExist:
             return None
         except CachedLand.MultipleObjectsReturned:
             return None
-    except CachedLand.MultipleObjectsReturned:
-        return None
 
     return {
         "contactpersoon": "",

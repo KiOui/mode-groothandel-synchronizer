@@ -58,5 +58,5 @@ class TaxMappingAdmin(admin.ModelAdmin):
 
 @admin.register(CachedLand)
 class CachedLandAdmin(admin.ModelAdmin):
-    search_fields = ("naam", "landcode", "landcode_iso", "uphance_country_code")
-    list_display = ("naam", "landcode", "uphance_country_code")
+    search_fields = ("naam", "landcode", "landcode_iso")
+    list_display = ("naam", "landcode")

@@ -12,6 +12,7 @@ from sendcloud.client.sendcloud import Sendcloud
 from sendcloud.client.models.shipping_method import ShippingMethod as SendcloudShippingMethod
 from uphance.clients.models.pick_ticket import PickTicket as UphancePickTicket
 from uphance.constants import PICK_TICkET_STATUS_SHIPPED
+from uphance.models import Country as UphanceCountry
 
 logger = logging.getLogger(__name__)
 
@@ -150,11 +151,7 @@ def setup_pick_ticket_for_synchronisation(
     }
 
 
-def get_shipping_method(sendcloud_client: Sendcloud) -> SendcloudShippingMethod:
-    selected_shipping_method_name = settings.SENDCLOUD_SHIPPING_METHOD
-    if selected_shipping_method_name is None:
-        raise SynchronizationError("No shipping method indicated in Django settings")
-
+def get_shipping_method(sendcloud_client: Sendcloud, selected_shipping_method_name: str) -> SendcloudShippingMethod:
     try:
         shipping_methods = sendcloud_client.get_shipping_methods()
     except ApiException as e:
@@ -224,8 +221,19 @@ def try_update_pick_ticket(sendcloud_client: Sendcloud, pick_ticket: UphancePick
         )
         return
 
+    country, _ = UphanceCountry.objects.get_or_create(country_code=pick_ticket.address.country)
+    if country.mapped_shipping_method_for_pick_tickets is not None:
+        shipping_method_name = country.mapped_shipping_method_for_pick_tickets.name
+    else:
+        shipping_method_name = settings.SENDCLOUD_DEFAULT_SHIPPING_METHOD
+
+    if shipping_method_name is None:
+        raise SynchronizationError(
+            f"No default shipping method indicated in Django settings and no shipping method specified for country {country.country_code}"
+        )
+
     try:
-        shipping_method = get_shipping_method(sendcloud_client)
+        shipping_method = get_shipping_method(sendcloud_client, shipping_method_name)
         pick_ticket_converted = setup_pick_ticket_for_synchronisation(pick_ticket, shipping_method)
         try:
             pick_ticket_converted["parcel"]["id"] = pick_ticket_in_database.sendcloud_id
@@ -266,8 +274,19 @@ def try_create_pick_ticket(sendcloud_client: Sendcloud, pick_ticket: UphancePick
         )
         return
 
+    country, _ = UphanceCountry.objects.get_or_create(country_code=pick_ticket.address.country)
+    if country.mapped_shipping_method_for_pick_tickets is not None:
+        shipping_method_name = country.mapped_shipping_method_for_pick_tickets.name
+    else:
+        shipping_method_name = settings.SENDCLOUD_DEFAULT_SHIPPING_METHOD
+
+    if shipping_method_name is None:
+        raise SynchronizationError(
+            f"No default shipping method indicated in Django settings and no shipping method specified for country {country.country_code}"
+        )
+
     try:
-        shipping_method = get_shipping_method(sendcloud_client)
+        shipping_method = get_shipping_method(sendcloud_client, shipping_method_name)
         pick_ticket_converted = setup_pick_ticket_for_synchronisation(pick_ticket, shipping_method)
         try:
             parcel = sendcloud_client.create_parcel(pick_ticket_converted)
