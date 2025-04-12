@@ -42,4 +42,3 @@ class CachedLand(models.Model):
     landcode = models.CharField(max_length=100)
     snelstart_id = models.UUIDField(unique=True)
     uri = models.CharField(max_length=200)
-    uphance_country_code = models.CharField(max_length=10, null=True, blank=True)

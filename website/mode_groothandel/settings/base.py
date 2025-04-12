@@ -10,6 +10,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "autocompletefilter",
     "import_export",
     "rangefilter",
     "rest_framework",
@@ -139,4 +140,4 @@ SNELSTART_CACHE_PATH = os.environ.get("SNELSTART_CACHE_PATH", ".snelstart-cache"
 
 SENDCLOUD_PUBLIC_KEY = os.environ.get("SENDCLOUD_PUBLIC_KEY", None)
 SENDCLOUD_PRIVATE_KEY = os.environ.get("SENDCLOUD_PRIVATE_KEY", None)
-SENDCLOUD_SHIPPING_METHOD = os.environ.get("SENDCLOUD_SHIPPING_METHOD", None)
+SENDCLOUD_DEFAULT_SHIPPING_METHOD = os.environ.get("SENDCLOUD_DEFAULT_SHIPPING_METHOD", None)
