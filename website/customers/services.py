@@ -1,4 +1,4 @@
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, Tuple
 
 from customers.models import Customer
 from mode_groothandel.clients.api import ApiException
@@ -14,7 +14,7 @@ from uphance.clients.models.customer_address import CustomerAddress as UphanceCu
 from uphance.models import Country as UphanceCountry
 
 
-def convert_address_information(address: UphanceCustomerAddress) -> Optional[dict]:
+def convert_address_information(address: UphanceCustomerAddress) -> Optional[Tuple[dict, CachedLand]]:
     """Convert address information of an Uphance customer to address information for Snelstart."""
     uphance_country, _ = UphanceCountry.objects.get_or_create(country_code=address.country)
 
@@ -29,13 +29,16 @@ def convert_address_information(address: UphanceCustomerAddress) -> Optional[dic
         except CachedLand.MultipleObjectsReturned:
             return None
 
-    return {
-        "contactpersoon": "",
-        "straat": address.line_1,
-        "postcode": address.postcode,
-        "plaats": address.city,
-        "land": {"id": str(snelstart_country.snelstart_id)},
-    }
+    return (
+        {
+            "contactpersoon": "",
+            "straat": address.line_1,
+            "postcode": address.postcode,
+            "plaats": address.city,
+            "land": {"id": str(snelstart_country.snelstart_id)},
+        },
+        snelstart_country,
+    )
 
 
 def retrieve_address_info_from_uphance_customer(customer: UphanceCustomer) -> Optional[UphanceCustomerAddress]:
@@ -75,8 +78,12 @@ def retrieve_contact_from_uphance_customer(customer: UphanceCustomer) -> Optiona
 def convert_uphance_customer_to_relatie(customer: UphanceCustomer) -> Dict[str, Any]:
     """Convert an Uphance Customer to a Snelstart Relatie."""
     address = retrieve_address_info_from_uphance_customer(customer)
+    snelstart_country = None
+
     if address is not None:
-        address = convert_address_information(address)
+        address_and_snelstart_country = convert_address_information(address)
+        if address_and_snelstart_country is not None:
+            address, snelstart_country = address_and_snelstart_country
 
     name = customer.name
     # Snelstart relatie names can be a maximum of 50 characters long
@@ -84,6 +91,12 @@ def convert_uphance_customer_to_relatie(customer: UphanceCustomer) -> Dict[str, 
         name = name[:50]
 
     btw_nummer = customer.vat_number.replace(" ", "")
+
+    # Prepend the country code to the tax number if it exists (sometimes this is necessary for Snelstart).
+    if snelstart_country is not None and btw_nummer:
+        landcode_btw_nummer = snelstart_country.landcode
+        if not btw_nummer.startswith(landcode_btw_nummer):
+            btw_nummer = f"{landcode_btw_nummer}{btw_nummer}"
 
     email = None
     phone = None
