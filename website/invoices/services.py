@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+from decimal import ROUND_HALF_UP, Decimal
 from typing import List, Tuple, Dict, Any
 
 from invoices.models import Invoice
@@ -17,39 +18,53 @@ from uphance.clients.uphance import Uphance
 logger = logging.getLogger(__name__)
 
 
+def round_half_up(n, decimals=0):
+    """Round x.5 up instead of half."""
+    base = Decimal(10) ** -decimals
+    return float(Decimal(str(n)).quantize(base, rounding=ROUND_HALF_UP))
+
+
 def construct_order_and_tax_line_items(
     invoice: UphanceInvoice,
 ) -> Tuple[List[Dict[str, Any]], List[Dict[str, str]]]:
     """Construct order and tax line items for an invoice from Uphance."""
     to_order = list()
-    tax_lines = dict()
+    # Dictionary mapping tax percentages to the total amount to compute the tax over.
+    compute_tax_over_amount = dict()
     for item in invoice.line_items:
         amount = sum([x.quantity for x in item.line_quantities])
 
-        try:
-            tax_mapping = TaxMapping.objects.get(tax_amount=item.tax_level)
-        except TaxMapping.DoesNotExist:
-            raise SynchronizationError(f"Tax mapping for tax amount {item.tax_level} does not exist")
+        total_price_line = item.unit_price * amount
 
-        to_order.append(
-            {
-                "omschrijving": f"{amount} x {item.product_id} {item.product_name}",
-                "grootboek": {
-                    "id": str(tax_mapping.grootboekcode),
-                },
-                "bedrag": "{:.2f}".format(item.unit_price * amount),
-                "btwSoort": tax_mapping.name,
-            }
-        )
+        if total_price_line != 0:
+            try:
+                tax_mapping = TaxMapping.objects.get(tax_amount=item.tax_level)
+            except TaxMapping.DoesNotExist:
+                raise SynchronizationError(f"Tax mapping for tax amount {item.tax_level} does not exist")
 
-        tax = item.unit_price * amount * item.tax_level / 100
-        if tax != 0:
-            if tax_mapping.name in tax_lines.keys():
-                tax_lines[tax_mapping.name] = tax_lines[tax_mapping.name] + tax
+            to_order.append(
+                {
+                    "omschrijving": f"{amount} x {item.product_id} {item.product_name}",
+                    "grootboek": {
+                        "id": str(tax_mapping.grootboekcode),
+                    },
+                    "bedrag": "{:.2f}".format(total_price_line),
+                    "btwSoort": tax_mapping.name,
+                }
+            )
+
+            if tax_mapping in compute_tax_over_amount.keys():
+                compute_tax_over_amount[tax_mapping] = compute_tax_over_amount[tax_mapping] + total_price_line
             else:
-                tax_lines[tax_mapping.name] = tax
+                compute_tax_over_amount[tax_mapping] = total_price_line
 
-    if invoice.shipping_cost > 0:
+    # Calculate the tax.
+    tax_lines = dict()
+
+    for tax_mapping, total_amount_to_compute_tax_over in compute_tax_over_amount.items():
+        tax_lines[tax_mapping.name] = total_amount_to_compute_tax_over * tax_mapping.tax_amount / 100
+
+    if invoice.shipping_cost != 0:
         tax_level = int(invoice.shipping_tax / invoice.shipping_cost * 100)
         try:
             tax_mapping = TaxMapping.objects.get(tax_amount=tax_level)
@@ -72,7 +87,8 @@ def construct_order_and_tax_line_items(
             tax_lines[tax_mapping.name] = invoice.shipping_tax
 
     tax_lines = [
-        {"btwSoort": BTW_VERKOPEN_PREFIX + tax_name, "btwBedrag": "{:.2f}".format(tax_amount)}
+        # Round tax amount by 2 digits.
+        {"btwSoort": BTW_VERKOPEN_PREFIX + tax_name, "btwBedrag": "{:.2f}".format(round_half_up(tax_amount, 2))}
         for (tax_name, tax_amount) in tax_lines.items()
         if tax_amount > 0
     ]
