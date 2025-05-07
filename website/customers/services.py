@@ -75,6 +75,19 @@ def retrieve_contact_from_uphance_customer(customer: UphanceCustomer) -> Optiona
     return None
 
 
+def normalize_tax_number(btw_nummer: str, snelstart_country: Optional[CachedLand]):
+    """Normalize a tax number by applying some standard operations."""
+    btw_nummer = btw_nummer.replace(" ", "").replace(".", "").replace("-", "")
+
+    # Prepend the country code to the tax number if it exists (sometimes this is necessary for Snelstart).
+    if snelstart_country is not None and btw_nummer:
+        landcode_btw_nummer = snelstart_country.landcode
+        if not btw_nummer.startswith(landcode_btw_nummer):
+            btw_nummer = f"{landcode_btw_nummer}{btw_nummer}"
+
+    return btw_nummer
+
+
 def convert_uphance_customer_to_relatie(customer: UphanceCustomer) -> Dict[str, Any]:
     """Convert an Uphance Customer to a Snelstart Relatie."""
     address = retrieve_address_info_from_uphance_customer(customer)
@@ -90,13 +103,7 @@ def convert_uphance_customer_to_relatie(customer: UphanceCustomer) -> Dict[str, 
     if len(name) > 50:
         name = name[:50]
 
-    btw_nummer = customer.vat_number.replace(" ", "")
-
-    # Prepend the country code to the tax number if it exists (sometimes this is necessary for Snelstart).
-    if snelstart_country is not None and btw_nummer:
-        landcode_btw_nummer = snelstart_country.landcode
-        if not btw_nummer.startswith(landcode_btw_nummer):
-            btw_nummer = f"{landcode_btw_nummer}{btw_nummer}"
+    btw_nummer = normalize_tax_number(customer.vat_number, snelstart_country)
 
     email = None
     phone = None
