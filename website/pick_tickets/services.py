@@ -117,7 +117,10 @@ def setup_pick_ticket_for_synchronisation(
         weight = 0.001
 
     # Grab only the digits from the phone number.
-    phone_number = re.sub(r"\D", "", pick_ticket.contact_phone) if pick_ticket.contact_phone is not None else None
+    if pick_ticket.contact_phone is not None:
+        phone_number = re.sub(r"\D", "", pick_ticket.contact_phone)
+    else:
+        phone_number = None
 
     return {
         "parcel": {
@@ -229,7 +232,8 @@ def try_update_pick_ticket(sendcloud_client: Sendcloud, pick_ticket: UphancePick
 
     if shipping_method_name is None:
         raise SynchronizationError(
-            f"No default shipping method indicated in Django settings and no shipping method specified for country {country.country_code}"
+            f"No default shipping method indicated in Django settings and no shipping method specified for country "
+            f"{country.country_code}"
         )
 
     try:
@@ -282,7 +286,8 @@ def try_create_pick_ticket(sendcloud_client: Sendcloud, pick_ticket: UphancePick
 
     if shipping_method_name is None:
         raise SynchronizationError(
-            f"No default shipping method indicated in Django settings and no shipping method specified for country {country.country_code}"
+            f"No default shipping method indicated in Django settings and no shipping method specified for country "
+            f"{country.country_code}"
         )
 
     try:

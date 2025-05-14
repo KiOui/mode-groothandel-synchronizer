@@ -8,9 +8,11 @@ from mode_groothandel.clients.cache.cache import CacheFileHandler
 from mode_groothandel.clients.utils import (
     get_value_or_error,
     apply_from_data_or_error,
+    apply_from_data_to_list_or_error,
 )
 from uphance.clients.authentication import UphanceAuthClient
 from uphance.clients.models.api_page import ApiPage
+from uphance.clients.models.channel import Channel
 from uphance.clients.models.credit_note import CreditNote
 from uphance.clients.models.customer import Customer
 from uphance.clients.models.invoice import Invoice
@@ -57,6 +59,9 @@ class Uphance(ApiClient):
             return None
 
         invoices = get_value_or_error(response, "invoices")
+        import json
+
+        print(json.dumps(invoices, indent=2))
 
         if len(invoices) > 0:
             return Invoice.from_data(invoices[0])
@@ -68,6 +73,11 @@ class Uphance(ApiClient):
         url = "invoices/" + self._create_querystring_safe(queries)
         response = self._get(url)
         return ApiPage.from_response(response, "invoices", Invoice.from_data)
+
+    def channels(self) -> list[Channel]:
+        """Retrieve the channels from Uphance."""
+        data = self._get("channels")
+        return apply_from_data_to_list_or_error(Channel.from_data, data, "channels")
 
     def order(self, order_id: int) -> SalesOrder:
         url = f"sales_orders/{order_id}"

@@ -10,16 +10,15 @@ from customers.services import match_or_create_snelstart_relatie_with_name
 from mutations.models import Mutation
 from snelstart.clients.snelstart import Snelstart
 from snelstart.constants import BTW_VERKOPEN_PREFIX
-from snelstart.models import TaxMapping
 from uphance.clients.models.invoice import Invoice as UphanceInvoice
 from uphance.clients.uphance import Uphance
-
+from uphance.models import TaxMapping
 
 logger = logging.getLogger(__name__)
 
 
 def round_half_up(n, decimals=0):
-    """Round x.5 up instead of half."""
+    """Round x.5 up instead of half up and half down."""
     base = Decimal(10) ** -decimals
     return float(Decimal(str(n)).quantize(base, rounding=ROUND_HALF_UP))
 
@@ -31,6 +30,8 @@ def construct_order_and_tax_line_items(
     to_order = list()
     # Dictionary mapping tax percentages to the total amount to compute the tax over.
     compute_tax_over_amount = dict()
+    # The tax mappings belonging to the channel of the invoice.
+    filtered_tax_mappings = TaxMapping.objects.filter(channel_mapping__channel__channel_id=invoice.channel_id)
     for item in invoice.line_items:
         amount = sum([x.quantity for x in item.line_quantities])
 
@@ -38,9 +39,11 @@ def construct_order_and_tax_line_items(
 
         if total_price_line != 0:
             try:
-                tax_mapping = TaxMapping.objects.get(tax_amount=item.tax_level)
+                tax_mapping = filtered_tax_mappings.get(tax_amount=item.tax_level)
             except TaxMapping.DoesNotExist:
-                raise SynchronizationError(f"Tax mapping for tax amount {item.tax_level} does not exist")
+                raise SynchronizationError(
+                    f"Tax mapping for tax amount {item.tax_level} in channel {invoice.channel_id} does not exist"
+                )
 
             to_order.append(
                 {
@@ -67,9 +70,11 @@ def construct_order_and_tax_line_items(
     if invoice.shipping_cost != 0:
         tax_level = int(invoice.shipping_tax / invoice.shipping_cost * 100)
         try:
-            tax_mapping = TaxMapping.objects.get(tax_amount=tax_level)
+            tax_mapping = filtered_tax_mappings.get(tax_amount=tax_level)
         except TaxMapping.DoesNotExist:
-            raise SynchronizationError(f"Tax mapping for tax amount {tax_level} does not exist")
+            raise SynchronizationError(
+                f"Tax mapping for tax amount {tax_level} in channel {invoice.channel_id} does not exist"
+            )
         to_order.append(
             {
                 "omschrijving": "Shipping costs",
