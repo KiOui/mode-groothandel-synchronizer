@@ -39,7 +39,7 @@ class CachedChannel(models.Model):
 
 class ChannelMapping(models.Model):
 
-    channel = models.ForeignKey(to=CachedChannel, on_delete=models.CASCADE)
+    channel = models.OneToOneField(to=CachedChannel, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.channel.name} ({self.channel.channel_id})"
@@ -48,7 +48,7 @@ class ChannelMapping(models.Model):
 class TaxMapping(models.Model):
 
     channel_mapping = models.ForeignKey(to=ChannelMapping, on_delete=models.CASCADE)
-    tax_amount = models.FloatField(unique=True)
+    tax_amount = models.FloatField()
     grootboekcode = models.UUIDField()
     grootboekcode_shipping = models.UUIDField()
 
