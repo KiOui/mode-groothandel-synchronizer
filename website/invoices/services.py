@@ -52,7 +52,7 @@ def construct_order_and_tax_line_items(
                         "id": str(tax_mapping.grootboekcode),
                     },
                     "bedrag": "{:.2f}".format(total_price_line),
-                    "btwSoort": tax_mapping.name,
+                    "btwSoort": tax_mapping.tax_name,
                 }
             )
 
@@ -65,7 +65,7 @@ def construct_order_and_tax_line_items(
     tax_lines = dict()
 
     for tax_mapping, total_amount_to_compute_tax_over in compute_tax_over_amount.items():
-        tax_lines[tax_mapping.name] = total_amount_to_compute_tax_over * tax_mapping.tax_amount / 100
+        tax_lines[tax_mapping.tax_name] = total_amount_to_compute_tax_over * tax_mapping.tax_amount / 100
 
     if invoice.shipping_cost != 0:
         tax_level = int(invoice.shipping_tax / invoice.shipping_cost * 100)
@@ -82,14 +82,14 @@ def construct_order_and_tax_line_items(
                     "id": str(tax_mapping.grootboekcode),
                 },
                 "bedrag": "{:.2f}".format(invoice.shipping_cost),
-                "btwSoort": tax_mapping.name,
+                "btwSoort": tax_mapping.tax_name,
             }
         )
 
-        if tax_mapping.name in tax_lines.keys():
-            tax_lines[tax_mapping.name] = tax_lines[tax_mapping.name] + invoice.shipping_tax
+        if tax_mapping.tax_name in tax_lines.keys():
+            tax_lines[tax_mapping.tax_name] = tax_lines[tax_mapping.tax_name] + invoice.shipping_tax
         else:
-            tax_lines[tax_mapping.name] = invoice.shipping_tax
+            tax_lines[tax_mapping.tax_name] = invoice.shipping_tax
 
     tax_lines = [
         # Round tax amount by 2 digits.

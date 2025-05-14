@@ -48,6 +48,7 @@ class ChannelMapping(models.Model):
 class TaxMapping(models.Model):
 
     channel_mapping = models.ForeignKey(to=ChannelMapping, on_delete=models.CASCADE)
+    tax_name = models.CharField(max_length=100)
     tax_amount = models.FloatField()
     grootboekcode = models.UUIDField()
     grootboekcode_shipping = models.UUIDField()

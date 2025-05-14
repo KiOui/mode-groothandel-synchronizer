@@ -66,6 +66,20 @@ class TaxMappingAdminForm(forms.ModelForm):
                 "bottom of the screen."
             )
 
+    def save(self, commit=True):
+        """Save a TaxMapping object."""
+        obj = super(TaxMappingAdminForm, self).save(commit=False)
+        timezone = pytz.timezone(settings.TIME_ZONE)
+        now = timezone.localize(datetime.now())
+        tax_name = CachedBtwTarief.objects.get(
+            datum_vanaf__lte=now, datum_tot_en_met__gt=now, btw_percentage=obj.tax_amount
+        )
+        obj.tax_name = tax_name
+        if commit:
+            obj.save()
+
+        return obj
+
     class Meta:
         """Meta class."""
 
@@ -75,3 +89,4 @@ class TaxMappingAdminForm(forms.ModelForm):
             "grootboekcode",
             "grootboekcode_shipping",
         )
+        exclude = ("tax_name",)
