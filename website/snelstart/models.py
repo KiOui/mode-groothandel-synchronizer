@@ -1,14 +1,6 @@
 from django.db import models
 
 
-class TaxMapping(models.Model):
-
-    name = models.CharField(max_length=100, unique=True)
-    tax_amount = models.FloatField(unique=True)
-    grootboekcode = models.UUIDField()
-    grootboekcode_shipping = models.UUIDField()
-
-
 class CachedBtwTarief(models.Model):
 
     btw_soort = models.CharField(max_length=100)

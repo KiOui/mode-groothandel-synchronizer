@@ -8,10 +8,9 @@ from customers.services import match_or_create_snelstart_relatie_with_name
 from mutations.models import Mutation
 from snelstart.clients.snelstart import Snelstart
 from snelstart.constants import BTW_VERKOPEN_PREFIX
-from snelstart.models import TaxMapping
 from uphance.clients.models.credit_note import CreditNote as UphanceCreditNote
 from uphance.clients.uphance import Uphance
-
+from uphance.models import TaxMapping
 
 logger = logging.getLogger(__name__)
 
@@ -19,16 +18,23 @@ logger = logging.getLogger(__name__)
 def construct_order_and_tax_line_items(
     credit_note: UphanceCreditNote,
 ) -> Tuple[List[Dict[str, Any]], List[Dict[str, str]]]:
+    # TODO: The credit notes do not communicate the channel IDs yet. This should be resolved by Uphance after which
+    #  this method needs to get adjusted.
     to_order = list()
     tax_lines = dict()
+
+    # The tax mappings belonging to the channel of the invoice.
+    filtered_tax_mappings = TaxMapping.objects.filter(channel_mapping__channel__channel_id=credit_note.channel_id)
 
     for item in credit_note.line_items:
         amount = sum([x.quantity for x in item.line_quantities])
 
         try:
-            tax_mapping = TaxMapping.objects.get(tax_amount=item.tax_level)
+            tax_mapping = filtered_tax_mappings.get(tax_amount=item.tax_level)
         except TaxMapping.DoesNotExist:
-            raise SynchronizationError(f"Tax mapping for tax amount {item.tax_level} does not exist")
+            raise SynchronizationError(
+                f"Tax mapping for tax amount {item.tax_level} in channel {credit_note.channel_id} does not exist"
+            )
 
         to_order.append(
             {
@@ -54,11 +60,11 @@ def construct_order_and_tax_line_items(
         computed_tax_level_2_decimals = "{:.1f}".format(computed_tax_level)
 
         try:
-            tax_mapping = TaxMapping.objects.get(tax_amount=float(computed_tax_level_2_decimals))
+            tax_mapping = filtered_tax_mappings.get(tax_amount=float(computed_tax_level_2_decimals))
         except TaxMapping.DoesNotExist:
             raise SynchronizationError(
                 f"Error finding tax mapping for freeform amount: Tax mapping for computed tax amount "
-                f"{computed_tax_level_2_decimals} does not exist"
+                f"{computed_tax_level_2_decimals} and channel {credit_note.channel_id} does not exist"
             )
 
         to_order.append(
