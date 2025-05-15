@@ -1,7 +1,7 @@
 from django.db import models
 
 from sendcloud.models import CachedShippingMethod
-from snelstart.models import CachedLand
+from snelstart.models import CachedLand, CachedBtwTarief
 
 
 class Country(models.Model):
@@ -48,13 +48,12 @@ class ChannelMapping(models.Model):
 class TaxMapping(models.Model):
 
     channel_mapping = models.ForeignKey(to=ChannelMapping, on_delete=models.CASCADE)
-    tax_name = models.CharField(max_length=100)
-    tax_amount = models.FloatField()
+    tax_amount = models.ForeignKey(to=CachedBtwTarief, on_delete=models.CASCADE)
     grootboekcode = models.UUIDField()
     grootboekcode_shipping = models.UUIDField()
 
     def __str__(self):
-        return f"{self.channel_mapping.channel.name} ({self.tax_amount})"
+        return f"{self.channel_mapping.channel.name} ({self.tax_amount.btw_soort} {self.tax_amount.btw_percentage})"
 
     class Meta:
         unique_together = ("channel_mapping", "tax_amount")

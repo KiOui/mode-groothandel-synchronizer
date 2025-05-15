@@ -59,9 +59,6 @@ class Uphance(ApiClient):
             return None
 
         invoices = get_value_or_error(response, "invoices")
-        import json
-
-        print(json.dumps(invoices, indent=2))
 
         if len(invoices) > 0:
             return Invoice.from_data(invoices[0])

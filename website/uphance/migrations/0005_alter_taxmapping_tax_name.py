@@ -14,7 +14,7 @@ def add_tax_name(apps, schema_editor):
 
     for tax_mapping in TaxMapping.objects.all():
         tax_name = CachedBtwTarief.objects.get(
-            datum_vanaf__lte=now, datum_tot_en_met__gt=now, btw_percentage=obj.tax_amount
+            datum_vanaf__lte=now, datum_tot_en_met__gt=now, btw_percentage=tax_mapping.tax_amount
         )
         tax_mapping.tax_name = tax_name
         tax_mapping.save()

@@ -8,6 +8,9 @@ class CachedBtwTarief(models.Model):
     datum_vanaf = models.DateTimeField()
     datum_tot_en_met = models.DateTimeField()
 
+    def __str__(self):
+        return f"{self.btw_soort} - {self.btw_percentage}"
+
     class Meta:
         unique_together = (("btw_soort", "datum_vanaf"),)
 

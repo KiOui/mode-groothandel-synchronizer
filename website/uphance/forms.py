@@ -4,14 +4,13 @@ import pytz
 from django import forms
 from django.conf import settings
 
-from snelstart.models import CachedBtwTarief, CachedGrootboek
+from snelstart.models import CachedGrootboek, CachedBtwTarief
 from uphance.models import TaxMapping
 
 
 class TaxMappingAdminForm(forms.ModelForm):
     """Tax Mapping Admin Form."""
 
-    tax_amount = forms.ChoiceField(required=True)
     grootboekcode = forms.ChoiceField(required=True)
     grootboekcode_shipping = forms.ChoiceField(required=True)
 
@@ -27,11 +26,9 @@ class TaxMappingAdminForm(forms.ModelForm):
         else:
             timezone = pytz.timezone(settings.TIME_ZONE)
             now = timezone.localize(datetime.now())
-            choices = [
-                (x.btw_percentage, f"{x.btw_soort} ({x.btw_percentage})")
-                for x in CachedBtwTarief.objects.filter(datum_vanaf__lte=now, datum_tot_en_met__gt=now)
-            ]
-            self.fields["tax_amount"].choices = choices
+            self.fields["tax_amount"].queryset = CachedBtwTarief.objects.filter(
+                datum_vanaf__lte=now, datum_tot_en_met__gt=now
+            )
             self.fields["tax_amount"].help_text = (
                 "The tax types displayed here are cached. If you want to refresh these tax types, "
                 "please press the 'Refresh Tax Types' button at the "
@@ -66,20 +63,6 @@ class TaxMappingAdminForm(forms.ModelForm):
                 "bottom of the screen."
             )
 
-    def save(self, commit=True):
-        """Save a TaxMapping object."""
-        obj = super(TaxMappingAdminForm, self).save(commit=False)
-        timezone = pytz.timezone(settings.TIME_ZONE)
-        now = timezone.localize(datetime.now())
-        cached_btw_tarief = CachedBtwTarief.objects.get(
-            datum_vanaf__lte=now, datum_tot_en_met__gt=now, btw_percentage=obj.tax_amount
-        )
-        obj.tax_name = cached_btw_tarief.btw_soort
-        if commit:
-            obj.save()
-
-        return obj
-
     class Meta:
         """Meta class."""
 
@@ -89,4 +72,3 @@ class TaxMappingAdminForm(forms.ModelForm):
             "grootboekcode",
             "grootboekcode_shipping",
         )
-        exclude = ("tax_name",)
