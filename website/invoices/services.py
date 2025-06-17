@@ -69,7 +69,9 @@ def construct_order_and_tax_line_items(
     tax_lines = dict()
 
     for tax_mapping, total_amount_to_compute_tax_over in compute_tax_over_amount.items():
-        tax_lines[tax_mapping.tax_amount.btw_soort] = total_amount_to_compute_tax_over * tax_mapping.tax_amount.btw_percentage / 100
+        tax_lines[tax_mapping.tax_amount.btw_soort] = (
+            total_amount_to_compute_tax_over * tax_mapping.tax_amount.btw_percentage / 100
+        )
 
     if invoice.shipping_cost != 0:
         tax_level = int(invoice.shipping_tax / invoice.shipping_cost * 100)
