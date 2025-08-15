@@ -97,6 +97,8 @@ def convert_uphance_customer_to_relatie(customer: UphanceCustomer) -> Dict[str, 
         address_and_snelstart_country = convert_address_information(address)
         if address_and_snelstart_country is not None:
             address, snelstart_country = address_and_snelstart_country
+        else:
+            address, snelstart_country = None, None
 
     name = customer.name
     # Snelstart relatie names can be a maximum of 50 characters long
