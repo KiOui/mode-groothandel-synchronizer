@@ -63,6 +63,8 @@ def map_parcel_items(pick_ticket: UphancePickTicket) -> List[Any]:
         product_description = line_item.product_name
         product_id = line_item.product_id
         color = line_item.color
+        intrastat_code = line_item.intrastat_code
+        country_of_origin = line_item.country_of_origin
         for line_quantity in line_item.line_quantities:
             if line_quantity.quantity > 0:
                 sku = line_quantity.sku_id
@@ -70,6 +72,8 @@ def map_parcel_items(pick_ticket: UphancePickTicket) -> List[Any]:
                 parcel_items.append(
                     {
                         "description": product_description,
+                        "hs_code": intrastat_code,
+                        "origin_country": country_of_origin,
                         "quantity": line_quantity.quantity,
                         "sku": sku,
                         "weight": "0.001",
