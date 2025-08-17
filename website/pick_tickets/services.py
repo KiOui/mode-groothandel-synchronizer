@@ -65,10 +65,15 @@ def map_parcel_items(pick_ticket: UphancePickTicket) -> List[Any]:
         color = line_item.color
         intrastat_code = line_item.intrastat_code
         country_of_origin = line_item.country_of_origin
+        weight = line_item.weight
+        # Default `weight_unit` to "lb".
+        weight_unit = line_item.weight_unit if line_item.weight_unit else "lb"
         for line_quantity in line_item.line_quantities:
             if line_quantity.quantity > 0:
                 sku = line_quantity.sku_id
                 size = line_quantity.size
+                total_weight = line_quantity.quantity * weight
+                total_weight = convert_weight_to_kg(total_weight, weight_unit)
                 parcel_items.append(
                     {
                         "description": product_description,
@@ -76,7 +81,7 @@ def map_parcel_items(pick_ticket: UphancePickTicket) -> List[Any]:
                         "origin_country": country_of_origin,
                         "quantity": line_quantity.quantity,
                         "sku": sku,
-                        "weight": "0.001",
+                        "weight": "{:.3f}".format(total_weight),
                         "value": "{:.02f}".format(line_item.unit_price),
                         "product_id": product_id,
                         "properties": {
@@ -104,6 +109,14 @@ def setup_pick_ticket_for_synchronisation(
     # Join the rest of the lines with '-' and add to address.
     address_2 = " - ".join(address_lines) if len(address_lines) > 0 else ""
 
+    # Grab only the digits from the phone number.
+    if pick_ticket.contact_phone is not None:
+        phone_number = re.sub(r"\D", "", pick_ticket.contact_phone)
+    else:
+        phone_number = None
+
+    parcel_items = map_parcel_items(pick_ticket)
+
     dimensions = convert_dimensions(pick_ticket.dimensions) if pick_ticket.dimensions is not None else None
 
     if dimensions is None:
@@ -111,20 +124,26 @@ def setup_pick_ticket_for_synchronisation(
     else:
         width, length, height = dimensions
 
-    if pick_ticket.gross_weight is not None:
-        weight = convert_weight_to_kg(pick_ticket.gross_weight, pick_ticket.gross_weight_unit)
+    if pick_ticket.weight is not None:
+        # Default `weight_unit` to "lb".
+        weight_unit = pick_ticket.weight_unit if pick_ticket.weight_unit else "lb"
+        weight = convert_weight_to_kg(pick_ticket.weight, weight_unit)
+    elif pick_ticket.gross_weight is not None:
+        # Default `weight_unit` to "lb".
+        weight_unit = pick_ticket.gross_weight_unit if pick_ticket.gross_weight_unit else "lb"
+        weight = convert_weight_to_kg(pick_ticket.gross_weight, weight_unit)
     else:
-        weight = 0.001
+        weight = None
 
-    # Weight parameter must be greater than 0.001.
-    if weight < 0.001:
-        weight = 0.001
+    if weight is not None:
+        # Weight parameter must be greater than 0.001.
+        if weight < 0.001:
+            weight = 0.001
 
-    # Grab only the digits from the phone number.
-    if pick_ticket.contact_phone is not None:
-        phone_number = re.sub(r"\D", "", pick_ticket.contact_phone)
-    else:
-        phone_number = None
+        total_weight_line_items = sum([float(parcel_item["weight"]) for parcel_item in parcel_items])
+
+        if weight < total_weight_line_items:
+            weight = total_weight_line_items
 
     return {
         "parcel": {
@@ -143,7 +162,7 @@ def setup_pick_ticket_for_synchronisation(
             "country_state": (
                 pick_ticket.address.state if sendcloud_requires_state(pick_ticket.address.country) else None
             ),
-            "parcel_items": map_parcel_items(pick_ticket),
+            "parcel_items": parcel_items,
             "weight": "{:.3f}".format(weight),
             "length": length,
             "width": width,
