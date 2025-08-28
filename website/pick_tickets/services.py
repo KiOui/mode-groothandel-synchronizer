@@ -74,6 +74,9 @@ def map_parcel_items(pick_ticket: UphancePickTicket) -> List[Any]:
                 size = line_quantity.size
                 total_weight = line_quantity.quantity * weight
                 total_weight = convert_weight_to_kg(total_weight, weight_unit)
+                # Weight parameter must be greater than or equal to 0.001.
+                if total_weight < 0.001:
+                    total_weight = 0.001
                 parcel_items.append(
                     {
                         "description": product_description,
@@ -136,7 +139,7 @@ def setup_pick_ticket_for_synchronisation(
         weight = None
 
     if weight is not None:
-        # Weight parameter must be greater than 0.001.
+        # Weight parameter must be greater than or equal to 0.001.
         if weight < 0.001:
             weight = 0.001
 
