@@ -66,8 +66,8 @@ def map_parcel_items(pick_ticket: UphancePickTicket) -> List[Any]:
         intrastat_code = line_item.intrastat_code
         country_of_origin = line_item.country_of_origin
         weight = line_item.weight
-        # Default `weight_unit` to "lb".
-        weight_unit = line_item.weight_unit if line_item.weight_unit else "lb"
+        # Default `weight_unit` to "kg".
+        weight_unit = line_item.weight_unit if line_item.weight_unit else "kg"
         for line_quantity in line_item.line_quantities:
             if line_quantity.quantity > 0:
                 sku = line_quantity.sku_id
@@ -128,12 +128,12 @@ def setup_pick_ticket_for_synchronisation(
         width, length, height = dimensions
 
     if pick_ticket.weight is not None:
-        # Default `weight_unit` to "lb".
-        weight_unit = pick_ticket.weight_unit if pick_ticket.weight_unit else "lb"
+        # Default `weight_unit` to "kg".
+        weight_unit = pick_ticket.weight_unit if pick_ticket.weight_unit else "kg"
         weight = convert_weight_to_kg(pick_ticket.weight, weight_unit)
     elif pick_ticket.gross_weight is not None:
-        # Default `weight_unit` to "lb".
-        weight_unit = pick_ticket.gross_weight_unit if pick_ticket.gross_weight_unit else "lb"
+        # Default `weight_unit` to "kg".
+        weight_unit = pick_ticket.gross_weight_unit if pick_ticket.gross_weight_unit else "kg"
         weight = convert_weight_to_kg(pick_ticket.gross_weight, weight_unit)
     else:
         weight = None
