@@ -4,6 +4,7 @@ from .base import *
 
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
+from celery.schedules import crontab
 
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
@@ -106,5 +107,12 @@ TASKS = {
         "OPTIONS": {
             "REDIS_URL": os.environ.get("REDIS_HOST", "redis://localhost:6379/0"),
         },
+    },
+}
+
+CELERY_BEAT_SCHEDULE = {
+    "synchronize-credit-notes": {
+        "task": "credit_notes.tasks.synchronize_credit_notes",
+        "schedule": crontab(minute=0), # Run on minute 0 of every hour (so this runs hourly).
     },
 }
