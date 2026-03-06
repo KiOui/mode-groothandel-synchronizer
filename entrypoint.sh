@@ -14,7 +14,7 @@ uwsgi --chdir=/app \
     --socket=:8000 \
     --processes=5 \
     --uid=nobody --gid=nogroup \
-    --harakiri=20 \
+    --harakiri=60 \
     --post-buffering=16384 \
     --max-requests=5000 \
     --thunder-lock \
