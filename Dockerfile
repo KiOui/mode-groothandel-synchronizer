@@ -6,7 +6,7 @@ ENV PYTHONUNBUFFERED 1
 
 # Install system dependencies
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends gcc python3-dev python3-pip cron \
+    && apt-get install -y --no-install-recommends gcc python3-dev python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory in the container

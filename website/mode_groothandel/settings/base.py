@@ -10,6 +10,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_tasks_redis",
     "autocompletefilter",
     "import_export",
     "rangefilter",
@@ -124,8 +125,6 @@ OAUTH2_PROVIDER_APPLICATION_MODEL = "oauth2_provider.Application"
 
 # Sites app
 SITE_ID = 1
-
-DJANGO_CRON_DELETE_LOGS_OLDER_THAN = 14
 
 UPHANCE_USERNAME = os.environ.get("UPHANCE_USERNAME", None)
 UPHANCE_PASSWORD = os.environ.get("UPHANCE_PASSWORD", None)
