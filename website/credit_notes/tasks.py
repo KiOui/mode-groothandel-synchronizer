@@ -6,6 +6,7 @@ from mutations.models import Mutation
 from snelstart.clients.snelstart import Snelstart
 from uphance.clients.uphance import Uphance
 from celery import shared_task
+from django.conf import settings
 
 
 @shared_task
@@ -17,8 +18,7 @@ def synchronize_credit_notes():
     else:
         synchronize_credit_notes_from_id = None
 
-    # TODO: Make this configurable later.
-    max_credit_notes_to_sync = 5
+    max_credit_notes_to_sync = settings.MAXIMUM_AMOUNT_OF_CREDIT_NOTES_TO_SYNC
 
     uphance_client = Uphance.get_client()
     snelstart_client = Snelstart.get_client()
@@ -29,10 +29,8 @@ def synchronize_credit_notes():
     credit_notes = uphance_client.credit_notes(since_id=synchronize_credit_notes_from_id)
     credit_notes = credit_notes.objects
 
-    CreditNote.objects.create(uphance_id=len(credit_notes))
-
     if max_credit_notes_to_sync is not None:
-        credit_notes = credit_notes.objects[:max_credit_notes_to_sync]
+        credit_notes = credit_notes[:max_credit_notes_to_sync]
 
     for credit_note in credit_notes:
         try_create_credit_note(uphance_client, snelstart_client, credit_note, Mutation.TRIGGER_CRON)

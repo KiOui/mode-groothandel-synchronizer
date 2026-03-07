@@ -141,3 +141,7 @@ SNELSTART_CACHE_PATH = os.environ.get("SNELSTART_CACHE_PATH", ".snelstart-cache"
 SENDCLOUD_PUBLIC_KEY = os.environ.get("SENDCLOUD_PUBLIC_KEY", None)
 SENDCLOUD_PRIVATE_KEY = os.environ.get("SENDCLOUD_PRIVATE_KEY", None)
 SENDCLOUD_DEFAULT_SHIPPING_METHOD = os.environ.get("SENDCLOUD_DEFAULT_SHIPPING_METHOD", None)
+
+MAXIMUM_AMOUNT_OF_CREDIT_NOTES_TO_SYNC = int(os.environ.get("MAXIMUM_AMOUNT_OF_CREDIT_NOTES_TO_SYNC", 5))
+# This is needed because Uphance does not communicate the channel ID in credit notes yet.
+HARDCODED_CREDIT_NOTES_CHANNEL_ID = int(os.environ.get("HARDCODED_CREDIT_NOTES_CHANNEL_ID", 10880))
