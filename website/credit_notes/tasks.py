@@ -29,6 +29,8 @@ def synchronize_credit_notes():
     credit_notes = uphance_client.credit_notes(since_id=synchronize_credit_notes_from_id)
     credit_notes = credit_notes.objects
 
+    CreditNote.objects.create(uphance_id=len(credit_notes))
+
     if max_credit_notes_to_sync is not None:
         credit_notes = credit_notes.objects[:max_credit_notes_to_sync]
 
