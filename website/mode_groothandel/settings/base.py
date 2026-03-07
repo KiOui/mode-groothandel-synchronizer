@@ -11,6 +11,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_tasks_redis",
+    "django_celery_beat",
     "autocompletefilter",
     "import_export",
     "rangefilter",

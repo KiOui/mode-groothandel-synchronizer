@@ -109,10 +109,3 @@ TASKS = {
         },
     },
 }
-
-CELERY_BEAT_SCHEDULE = {
-    "synchronize-credit-notes": {
-        "task": "credit_notes.tasks.synchronize_credit_notes",
-        "schedule": crontab(minute=0), # Run on minute 0 of every hour (so this runs hourly).
-    },
-}

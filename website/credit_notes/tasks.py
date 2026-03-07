@@ -1,14 +1,14 @@
 from django.conf import settings
-from django.tasks import task
 from credit_notes.models import CreditNote
 from credit_notes.services import try_create_credit_note
 from mode_groothandel.exceptions import SynchronizationError
 from mutations.models import Mutation
 from snelstart.clients.snelstart import Snelstart
 from uphance.clients.uphance import Uphance
+from celery import shared_task
 
 
-@task(queue_name="synchronize_credit_notes")
+@shared_task
 def synchronize_credit_notes():
     """Synchronize all credit notes."""
     first_credit_note = CreditNote.objects.all().order_by("uphance_id").first()
