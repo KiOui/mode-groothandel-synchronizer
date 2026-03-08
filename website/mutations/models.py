@@ -14,8 +14,9 @@ class Mutation(models.Model):
 
     TRIGGER_WEBHOOK = 0
     TRIGGER_MANUAL = 1
+    TRIGGER_CRON = 2
 
-    TRIGGERS = ((TRIGGER_WEBHOOK, "Webhook"), (TRIGGER_MANUAL, "Manual"))
+    TRIGGERS = ((TRIGGER_WEBHOOK, "Webhook"), (TRIGGER_MANUAL, "Manual"), (TRIGGER_CRON, "Cron"))
 
     created = models.DateTimeField(auto_now_add=True)
     method = models.PositiveIntegerField(choices=TYPES)

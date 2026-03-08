@@ -1,4 +1,4 @@
-FROM python:3.12-slim
+FROM python:3.14-slim
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -6,7 +6,7 @@ ENV PYTHONUNBUFFERED 1
 
 # Install system dependencies
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends gcc python3-dev python3-pip cron \
+    && apt-get install -y --no-install-recommends gcc python3-dev python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory in the container

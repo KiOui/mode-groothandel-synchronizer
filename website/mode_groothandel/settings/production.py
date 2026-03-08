@@ -4,6 +4,7 @@ from .base import *
 
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
+from celery.schedules import crontab
 
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
@@ -97,4 +98,14 @@ CACHES = {
         "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
         "LOCATION": "/app/cache",
     }
+}
+
+TASKS = {
+    "default": {
+        "BACKEND": "django_tasks_redis.RedisTaskBackend",
+        "QUEUES": [],
+        "OPTIONS": {
+            "REDIS_URL": os.environ.get("REDIS_HOST", "redis://localhost:6379/0"),
+        },
+    },
 }
