@@ -1,4 +1,3 @@
-from django.conf import settings
 from credit_notes.models import CreditNote
 from credit_notes.services import try_create_credit_note
 from mode_groothandel.exceptions import SynchronizationError
@@ -24,7 +23,7 @@ def synchronize_credit_notes():
     snelstart_client = Snelstart.get_client()
 
     if not uphance_client.set_current_organisation(settings.UPHANCE_ORGANISATION):
-        raise SynchronizationError(f"Could not set the current Uphance organisation")
+        raise SynchronizationError("Could not set the current Uphance organisation")
 
     credit_notes = uphance_client.credit_notes(since_id=synchronize_credit_notes_from_id)
     credit_notes = credit_notes.objects

@@ -99,7 +99,7 @@ def construct_order_and_tax_line_items(
 
     for tax_mapping, total_amount_to_compute_tax_over in compute_tax_over_amount.items():
         tax_lines[tax_mapping.tax_amount.btw_soort] = (
-                total_amount_to_compute_tax_over * tax_mapping.tax_amount.btw_percentage / 100
+            total_amount_to_compute_tax_over * tax_mapping.tax_amount.btw_percentage / 100
         )
 
     tax_lines = [
@@ -151,7 +151,7 @@ def setup_credit_note_for_synchronisation(
             f"could not be found or created in Snelstart."
         )
 
-    result =  {
+    result = {
         "factuurnummer": credit_note.credit_note_number,
         "klant": {"id": str(snelstart_relatie_for_order.id)},
         "boekingsregels": grootboek_regels,
