@@ -106,7 +106,7 @@ def construct_order_and_tax_line_items(
         # Round tax amount by 2 digits.
         {"btwSoort": BTW_VERKOPEN_PREFIX + tax_name, "btwBedrag": "{:.2f}".format(round_half_up(tax_amount, 2))}
         for (tax_name, tax_amount) in tax_lines.items()
-        if tax_amount > 0
+        if tax_amount != 0
     ]
 
     return to_order, tax_lines

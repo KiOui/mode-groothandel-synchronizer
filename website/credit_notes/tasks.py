@@ -11,7 +11,7 @@ from django.conf import settings
 @shared_task
 def synchronize_credit_notes():
     """Synchronize all credit notes."""
-    first_credit_note = CreditNote.objects.all().order_by("uphance_id").first()
+    first_credit_note = CreditNote.objects.all().order_by("-uphance_id").first()
     if first_credit_note is not None:
         synchronize_credit_notes_from_id = first_credit_note.uphance_id
     else:
