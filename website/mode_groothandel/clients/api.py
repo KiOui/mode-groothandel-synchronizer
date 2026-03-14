@@ -177,7 +177,7 @@ class ApiClient(abc.ABC):
             logger.error("Max Retries reached")
             try:
                 reason = retry_error.args[0].reason
-            except (IndexError, AttributeError):
+            except IndexError, AttributeError:
                 reason = None
             raise ApiException(429, -1, "%s:\n %s" % (request.path_url, "Max Retries"), reason=reason)
         except ValueError:

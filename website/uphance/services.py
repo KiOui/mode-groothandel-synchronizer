@@ -31,6 +31,6 @@ def refresh_cached_channels() -> (int, int, int):
     all_ids = created_channel_ids + updated_channel_ids
 
     channels_untouched = CachedChannel.objects.exclude(id__in=all_ids)
-    (channels_deleted_count, _) = channels_untouched.delete()
+    channels_deleted_count, _ = channels_untouched.delete()
 
     return len(channels_created), len(channels_updated), channels_deleted_count

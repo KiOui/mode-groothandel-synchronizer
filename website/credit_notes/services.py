@@ -36,6 +36,9 @@ def construct_order_and_tax_line_items(
         total_price_line = item.unit_price * amount
 
         if total_price_line != 0:
+            total_tax_line = item.unit_tax * amount
+            price_minus_tax = total_price_line - total_tax_line
+
             try:
                 tax_mapping = filtered_tax_mappings.get(tax_amount__btw_percentage=item.tax_level)
             except TaxMapping.DoesNotExist:
@@ -53,19 +56,20 @@ def construct_order_and_tax_line_items(
                     "grootboek": {
                         "id": str(tax_mapping.grootboekcode),
                     },
-                    "bedrag": "{:.2f}".format(total_price_line),
+                    "bedrag": "{:.2f}".format(price_minus_tax),
                     "btwSoort": tax_mapping.tax_amount.btw_soort,
                 }
             )
 
             if tax_mapping in compute_tax_over_amount.keys():
-                compute_tax_over_amount[tax_mapping] = compute_tax_over_amount[tax_mapping] + total_price_line
+                compute_tax_over_amount[tax_mapping] = compute_tax_over_amount[tax_mapping] + price_minus_tax
             else:
-                compute_tax_over_amount[tax_mapping] = total_price_line
+                compute_tax_over_amount[tax_mapping] = price_minus_tax
 
     if credit_note.freeform_amount is not None and credit_note.freeform_amount != 0:
         # Add a fake line item for the freeform amount.
-        computed_tax_level = credit_note.freeform_tax / (credit_note.freeform_amount / 100)
+        freeform_tax = credit_note.freeform_tax if credit_note.freeform_tax is not None else 0
+        computed_tax_level = freeform_tax / (credit_note.freeform_amount / 100)
         computed_tax_level_2_decimals = "{:.1f}".format(computed_tax_level)
 
         try:
@@ -136,6 +140,8 @@ def setup_credit_note_for_synchronisation(
 
     # Make line item prices negative because we are computing a credit note.
     credit_note.grand_total = credit_note.grand_total * -1
+    credit_note.items_total = credit_note.items_total * -1
+    credit_note.items_tax = credit_note.items_tax * -1
 
     for line_item in credit_note.line_items:
         line_item.unit_tax = line_item.unit_tax * -1
@@ -155,7 +161,7 @@ def setup_credit_note_for_synchronisation(
         "factuurnummer": credit_note.credit_note_number,
         "klant": {"id": str(snelstart_relatie_for_order.id)},
         "boekingsregels": grootboek_regels,
-        "factuurbedrag": "{:.2f}".format(credit_note.grand_total),
+        "factuurbedrag": "{:.2f}".format(credit_note.items_total),
         "betalingstermijn": 0,
         "factuurdatum": credit_note.created_at.strftime("%Y-%m-%d %H:%I:%S"),
         "btw": tax_lines,
