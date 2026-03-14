@@ -51,7 +51,7 @@ def refresh_cached_grootboeken() -> (int, int, int):
     all_ids = created_grootboeken_ids + updated_grootboeken_ids
 
     grootboeken_untouched = CachedGrootboek.objects.exclude(id__in=all_ids)
-    (grootboeken_deleted_count, _) = grootboeken_untouched.delete()
+    grootboeken_deleted_count, _ = grootboeken_untouched.delete()
 
     return len(grootboeken_created), len(grootboeken_updated), grootboeken_deleted_count
 
@@ -90,7 +90,7 @@ def refresh_cached_tax_types() -> (int, int, int):
     all_ids = created_tax_type_ids + updated_tax_type_ids
 
     tax_types_untouched = CachedBtwTarief.objects.exclude(id__in=all_ids)
-    (grootboeken_deleted_count, _) = tax_types_untouched.delete()
+    grootboeken_deleted_count, _ = tax_types_untouched.delete()
 
     return len(tax_types_created), len(tax_types_updated), grootboeken_deleted_count
 
@@ -128,6 +128,6 @@ def refresh_landen() -> (int, int, int):
     all_ids = created_landen_ids + updated_landen_ids
 
     landen_untouched = CachedLand.objects.exclude(id__in=all_ids)
-    (landen_deleted_count, _) = landen_untouched.delete()
+    landen_deleted_count, _ = landen_untouched.delete()
 
     return len(landen_created), len(landen_updated), landen_deleted_count

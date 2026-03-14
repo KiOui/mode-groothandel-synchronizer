@@ -12,6 +12,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """Execute the command."""
-        (created, updated, deleted) = refresh_landen()
+        created, updated, deleted = refresh_landen()
 
         print(f"Cached landen refreshed\nCreated: {created}\nUpdated: {updated}\nDeleted: {deleted}")
