@@ -12,6 +12,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """Execute the command."""
-        (created, updated, deleted) = refresh_shipping_methods()
+        created, updated, deleted = refresh_shipping_methods()
 
         print(f"Cached shipping methods refreshed\nCreated: {created}\nUpdated: {updated}\nDeleted: {deleted}")

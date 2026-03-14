@@ -12,6 +12,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """Execute the command."""
-        (created, updated, deleted) = refresh_cached_tax_types()
+        created, updated, deleted = refresh_cached_tax_types()
 
         print(f"Cached BTW Tarieven refreshed\nCreated: {created}\nUpdated: {updated}\nDeleted: {deleted}")

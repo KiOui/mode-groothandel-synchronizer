@@ -7,7 +7,6 @@ import requests
 from mode_groothandel.clients.authentication import AuthClient
 from mode_groothandel.clients.cache.cache import CacheFileHandler
 
-
 logger = logging.getLogger(__name__)
 
 

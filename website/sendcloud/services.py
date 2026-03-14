@@ -80,6 +80,6 @@ def refresh_shipping_methods() -> (int, int, int):
 
     all_ids = created_shipping_method_ids + updated_shipping_method_ids
     shipping_methods_untouched = CachedShippingMethod.objects.exclude(id__in=all_ids)
-    (shipping_methods_deleted_count, _) = shipping_methods_untouched.delete()
+    shipping_methods_deleted_count, _ = shipping_methods_untouched.delete()
 
     return len(shipping_methods_created), len(shipping_methods_updated), shipping_methods_deleted_count

@@ -3,7 +3,6 @@ import logging
 
 from mode_groothandel.clients.authentication import AuthClient
 
-
 logger = logging.getLogger(__name__)
 
 

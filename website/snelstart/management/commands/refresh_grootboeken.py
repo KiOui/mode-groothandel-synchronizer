@@ -12,6 +12,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """Execute the command."""
-        (created, updated, deleted) = refresh_cached_grootboeken()
+        created, updated, deleted = refresh_cached_grootboeken()
 
         print(f"Cached Grootboeken refreshed\nCreated: {created}\nUpdated: {updated}\nDeleted: {deleted}")
