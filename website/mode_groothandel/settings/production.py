@@ -99,13 +99,3 @@ CACHES = {
         "LOCATION": "/app/cache",
     }
 }
-
-TASKS = {
-    "default": {
-        "BACKEND": "django_tasks_redis.RedisTaskBackend",
-        "QUEUES": [],
-        "OPTIONS": {
-            "REDIS_URL": os.environ.get("REDIS_HOST", "redis://localhost:6379/0"),
-        },
-    },
-}

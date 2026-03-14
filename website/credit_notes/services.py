@@ -68,7 +68,8 @@ def construct_order_and_tax_line_items(
 
     if credit_note.freeform_amount is not None and credit_note.freeform_amount != 0:
         # Add a fake line item for the freeform amount.
-        computed_tax_level = credit_note.freeform_tax / (credit_note.freeform_amount / 100)
+        freeform_tax = credit_note.freeform_tax if credit_note.freeform_tax is not None else 0
+        computed_tax_level = freeform_tax / (credit_note.freeform_amount / 100)
         computed_tax_level_2_decimals = "{:.1f}".format(computed_tax_level)
 
         try:
