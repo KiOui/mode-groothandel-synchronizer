@@ -47,7 +47,7 @@ class PickTicketResource(resources.ModelResource):
 
         return None
 
-    def export_field(self, field, obj):
+    def export_field(self, field, obj, **kwargs):
         """Check for added mutation field before exporting."""
         if field.attribute in [
             self.ATTRIBUTE_MUTATION_TRIGGER,
