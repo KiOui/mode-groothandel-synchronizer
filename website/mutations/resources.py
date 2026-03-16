@@ -45,7 +45,7 @@ class MutationResource(resources.ModelResource):
 
         return None
 
-    def export_field(self, field, obj):
+    def export_field(self, field, obj, **kwargs):
         """Check for added extra fields before exporting."""
         if field.attribute in [
             self.ATTRIBUTE_CUSTOMER_NAME,
