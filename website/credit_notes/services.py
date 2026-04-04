@@ -36,8 +36,9 @@ def construct_order_and_tax_line_items(
         total_price_line = item.unit_price * amount
 
         if total_price_line != 0:
-            total_tax_line = item.unit_tax * amount
-            price_minus_tax = total_price_line - total_tax_line
+            # total_tax_line = item.unit_tax * amount
+            # Tax is not included in  price line so we don't subtract it, see credit note 171927.
+            price_minus_tax = total_price_line
 
             try:
                 tax_mapping = filtered_tax_mappings.get(tax_amount__btw_percentage=item.tax_level)
@@ -161,7 +162,7 @@ def setup_credit_note_for_synchronisation(
         "factuurnummer": credit_note.credit_note_number,
         "klant": {"id": str(snelstart_relatie_for_order.id)},
         "boekingsregels": grootboek_regels,
-        "factuurbedrag": "{:.2f}".format(credit_note.items_total),
+        "factuurbedrag": "{:.2f}".format(credit_note.items_total + credit_note.items_tax),
         "betalingstermijn": 0,
         "factuurdatum": credit_note.created_at.strftime("%Y-%m-%d %H:%I:%S"),
         "btw": tax_lines,
