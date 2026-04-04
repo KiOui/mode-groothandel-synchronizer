@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 def construct_order_and_tax_line_items(
     credit_note: UphanceCreditNote,
+    line_items_include_tax: bool,
 ) -> Tuple[List[Dict[str, Any]], List[Dict[str, str]]]:
     """Construct order and tax line items for a credit note from Uphance."""
     # TODO: The credit notes do not communicate the channel IDs yet. This should be resolved by Uphance after which
@@ -36,9 +37,13 @@ def construct_order_and_tax_line_items(
         total_price_line = item.unit_price * amount
 
         if total_price_line != 0:
-            # total_tax_line = item.unit_tax * amount
-            # Tax is not included in  price line so we don't subtract it, see credit note 171927.
-            price_minus_tax = total_price_line
+            if line_items_include_tax:
+                # Tax is included in price line so we subtract it, see credit note 168633.
+                total_tax_line = item.unit_tax * amount
+                price_minus_tax = total_price_line - total_tax_line
+            else:
+                # Tax is not included in price line so we don't subtract it, see credit note 171927.
+                price_minus_tax = total_price_line
 
             try:
                 tax_mapping = filtered_tax_mappings.get(tax_amount__btw_percentage=item.tax_level)
@@ -139,6 +144,9 @@ def setup_credit_note_for_synchronisation(
             f"An error occurred while requesting customer with company id {order.company_id}: {e}"
         )
 
+    # Sometimes the grand_total already includes the tax, and sometimes it does not.
+    line_items_include_tax = credit_note.grand_total == credit_note.subtotal
+
     # Make line item prices negative because we are computing a credit note.
     credit_note.grand_total = credit_note.grand_total * -1
     credit_note.items_total = credit_note.items_total * -1
@@ -149,7 +157,7 @@ def setup_credit_note_for_synchronisation(
         line_item.unit_price = line_item.unit_price * -1
         line_item.original_price = line_item.original_price * -1
 
-    grootboek_regels, tax_lines = construct_order_and_tax_line_items(credit_note)
+    grootboek_regels, tax_lines = construct_order_and_tax_line_items(credit_note, line_items_include_tax)
     snelstart_relatie_for_order = match_or_create_snelstart_relatie_with_name(snelstart_client, customer, trigger)
 
     if snelstart_relatie_for_order is None:
@@ -162,7 +170,7 @@ def setup_credit_note_for_synchronisation(
         "factuurnummer": credit_note.credit_note_number,
         "klant": {"id": str(snelstart_relatie_for_order.id)},
         "boekingsregels": grootboek_regels,
-        "factuurbedrag": "{:.2f}".format(credit_note.items_total + credit_note.items_tax),
+        "factuurbedrag": "{:.2f}".format(credit_note.items_total) if line_items_include_tax else "{:.2f}".format(credit_note.items_total + credit_note.items_tax),
         "betalingstermijn": 0,
         "factuurdatum": credit_note.created_at.strftime("%Y-%m-%d %H:%I:%S"),
         "btw": tax_lines,
